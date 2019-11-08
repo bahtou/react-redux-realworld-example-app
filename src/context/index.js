@@ -1,4 +1,5 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
+
 import {
   ARTICLE_PAGE_LOADED,
   ARTICLE_PAGE_UNLOADED,
@@ -23,20 +24,14 @@ import {
   REGISTER_PAGE_UNLOADED,
   UPDATE_FIELD_AUTH,
 
-  APP_LOAD,
-  REDIRECT,
-  LOGOUT,
-  ARTICLE_SUBMITTED,
-  SETTINGS_SAVED,
-  DELETE_ARTICLE,
-  EDITOR_PAGE_UNLOADED,
-  SETTINGS_PAGE_UNLOADED,
-
   EDITOR_PAGE_LOADED,
   ADD_TAG,
   REMOVE_TAG,
   UPDATE_FIELD_EDITOR,
+  ARTICLE_SUBMITTED,
 
+  SETTINGS_SAVED,
+  SETTINGS_PAGE_UNLOADED,
   FOLLOW_USER,
   UNFOLLOW_USER,
 
@@ -95,14 +90,6 @@ const initailState = {
     email: '',
     password: '',
     inProgress: null
-  },
-  common: {
-    appLoaded: false,
-    appName: 'Conduit',
-    currentUser: null,
-    redirectTo: '/',
-    token: null,
-    viewChangeCounter: 0
   },
   editor: {
     articleSlug: '',
@@ -224,12 +211,13 @@ function appStateReducer(state, action) {
         }
       };
     case HOME_PAGE_UNLOADED:
+      console.log('app', action.type);
       return {
         ...state,
-        common: {
-          ...state.common,
-          viewChangeCounter: state.common.viewChangeCounter + 1
-        },
+        // common: {
+        //   ...state.common,
+        //   viewChangeCounter: state.common.viewChangeCounter + 1
+        // },
         articleList: {},
         home: {}
       };
@@ -323,97 +311,6 @@ function appStateReducer(state, action) {
           [action.key]: action.value
         }
       };
-
-    /** COMMON reducer */
-    case APP_LOAD:
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          token: action.token || null,
-          appLoaded: true,
-          currentUser: action.payload ? action.payload.user : null
-        }
-      };
-    case REDIRECT:
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          redirectTo: null
-        }
-      };
-    case LOGOUT:
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          redirectTo: '/',
-          token: null,
-          currentUser: null
-        }
-      };
-    case ARTICLE_SUBMITTED:
-      const redirectUrl = `/article/${action.payload.article.slug}`;
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          redirectTo: redirectUrl,
-        },
-        editor: {
-          ...state.editor,
-          inProgress: null,
-          errors: action.error ? action.payload.errors : null
-        }
-       };
-    case SETTINGS_SAVED:
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          redirectTo: action.error ? null : '/',
-          currentUser: action.error ? null : action.payload.user
-        },
-        settings: {
-          ...state.settings,
-          inProgress: false,
-          errors: action.error ? action.payload.errors : null
-        }
-      };
-    // case LOGIN:
-    // case REGISTER:
-    case DELETE_ARTICLE:
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          redirectTo: '/'
-        }
-      };
-    // case ARTICLE_PAGE_UNLOADED:
-    case EDITOR_PAGE_UNLOADED:
-      return {
-        ...state,
-        editor: {}
-      };
-    // case HOME_PAGE_UNLOADED:
-    // case PROFILE_PAGE_UNLOADED:
-    // case PROFILE_FAVORITES_PAGE_UNLOADED:
-    // case LOGIN_PAGE_UNLOADED:
-    case SETTINGS_PAGE_UNLOADED:
-      return {
-        ...state,
-        common: {
-          ...state.common,
-          viewChangeCounter: state.common.viewChangeCounter + 1
-        },
-        settings: {
-          ...state.settings,
-          inProgress: true
-        }
-      };
-
     /** EDITOR reducer */
     case EDITOR_PAGE_LOADED:
       return {
@@ -429,7 +326,16 @@ function appStateReducer(state, action) {
         }
       };
     // case EDITOR_PAGE_UNLOADED:
-    // case ARTICLE_SUBMITTED:
+    case ARTICLE_SUBMITTED:
+      const redirectUrl = `/article/${action.payload.article.slug}`;
+      return {
+        ...state,
+        editor: {
+          ...state.editor,
+          inProgress: null,
+          errors: action.error ? action.payload.errors : null
+        }
+      };
     // case ASYNC_START:
     case ADD_TAG:
       return {
@@ -473,8 +379,24 @@ function appStateReducer(state, action) {
       };
 
     /** SETTINGS reducer */
-    // case SETTINGS_SAVED:
-    // case SETTINGS_PAGE_UNLOADED:
+    case SETTINGS_SAVED:
+      console.log('app', action.type);
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          inProgress: false,
+          errors: action.error ? action.payload.errors : null
+        }
+      };
+    case SETTINGS_PAGE_UNLOADED:
+        return {
+          ...state,
+          settings: {
+            ...state.settings,
+            inProgress: true
+          }
+        };
     // case ASYNC_START:
 
     case ASYNC_START:
@@ -514,7 +436,7 @@ function appStateReducer(state, action) {
 }
 
 function AppProvider({children}) {
-  const [state, dispatch] = React.useReducer(appStateReducer, initailState);
+  const [state, dispatch] = useReducer(appStateReducer, initailState);
 
   return (
     <AppStateContext.Provider value={state}>
@@ -539,3 +461,17 @@ export {
   useAppState,
   useAppDispatch
 };
+
+// export {
+//   StateContext,
+//   AppDispatchContext,
+//   ArticleContext,
+//   ArticleListContext,
+//   AuthContext,
+//   CommonContext,
+//   EditorContext,
+//   ErrorContext,
+//   HomeContext,
+//   ProfileContext,
+//   SettingsContext
+// };

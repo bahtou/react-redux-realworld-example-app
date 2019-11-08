@@ -3,7 +3,7 @@ import ArticleList from '../ArticleList';
 import agent from '../../agent';
 import { CHANGE_TAB } from '../../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../../context';
-
+import { useCommonState } from '../../context/common';
 
 const YourFeedTab = ({ token, tab, onTabClick }) => {
   if (token) {
@@ -60,8 +60,10 @@ const TagFilterTab = ({ tag }) => {
 const MainView = ({ loading }) => {
   const appState = useAppState();
   const appDispatch = useAppDispatch();
-  const { common, articleList } = appState;
+  const { articleList } = appState;
   const { articles, articlesCount, currentPage, pager, tab, tag } = articleList;
+
+  const common = useCommonState();
 
   const onTabClick = (tab, pager, payload) => {
     appDispatch({

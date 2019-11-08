@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAppState } from '../context';
+import { useCommonState } from '../context/common';
 
 
 const LoggedOutView = ({ currentUser }) => {
@@ -73,8 +73,7 @@ const LoggedInView = ({ currentUser })=> {
 };
 
 function Header() {
-  const appState = useAppState();
-  const { common } = appState;
+  const common = useCommonState();
 
   return (
     <nav className="navbar navbar-light">

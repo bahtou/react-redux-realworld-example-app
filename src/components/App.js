@@ -12,17 +12,13 @@ import ProfileFavorites from '../components/ProfileFavorites';
 import Register from '../components/Register';
 import Settings from '../components/Settings';
 
-import {
-  AppProvider,
-  useAppState,
-  useAppDispatch
-} from '../context';
+import { AppProvider } from '../context';
+import { useCommonState, useCommonDispatch  } from '../context/common';
 
 
 function App() {
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
-  const { common } = appState;
+  const common = useCommonState();
+  const commonDispatch = useCommonDispatch();
 
   useEffect(() => {
     const token = window.localStorage.getItem('jwt');
@@ -35,7 +31,7 @@ function App() {
         result = await agent.Auth.current();
       }
 
-      appDispatch({
+      commonDispatch({
         type: APP_LOAD,
         token,
         payload: {

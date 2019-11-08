@@ -8,6 +8,7 @@ import {
   LOGOUT
 } from '../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../context';
+import { useCommonState, useCommonDispatch  } from '../context/common';
 
 
 function SettingsForm({ currentUser, onSubmitForm }) {
@@ -103,12 +104,11 @@ function SettingsForm({ currentUser, onSubmitForm }) {
 
 function Settings({ errors }) {
   const history = useHistory();
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
-  const { common:{ currentUser }} = appState;
+  const { currentUser } = useCommonState();
+  const commonDispatch = useCommonDispatch();
 
   const onClickLogout = () => {
-    appDispatch({ type: LOGOUT });
+    commonDispatch({ type: LOGOUT });
 
     window.localStorage.setItem('jwt', '');
     agent.setToken(null);
@@ -117,7 +117,7 @@ function Settings({ errors }) {
   };
 
   const onSubmitForm = async user => {
-    appDispatch({ type: SETTINGS_SAVED, payload: await agent.Auth.save(user) });
+    commonDispatch({ type: SETTINGS_SAVED, payload: await agent.Auth.save(user) });
     history.push('/');
   };
 

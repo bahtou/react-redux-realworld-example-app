@@ -9,13 +9,17 @@ import {
   APPLY_TAG_FILTER
 } from '../../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../../context';
+import { useCommonState, useCommonDispatch  } from '../../context/common';
 
 const Promise = global.Promise;
 
 function Home() {
   const appState = useAppState();
   const appDispatch = useAppDispatch();
-  const { common, home } = appState;
+  const { home } = appState;
+
+  const common = useCommonState();
+  const commonDispatch = useCommonDispatch();
 
   useEffect(() => {
     const tab = common.token ? 'feed' : 'all';
@@ -40,7 +44,11 @@ function Home() {
     };
 
     main();
-    return () => appDispatch({  type: HOME_PAGE_UNLOADED });
+    return () => {
+      // which to dispatch first? top-bottom, bottom-top?
+      appDispatch({  type: HOME_PAGE_UNLOADED });
+      commonDispatch({ type: HOME_PAGE_UNLOADED });
+    };
   }, []);
 
   const onClickTag = (tag, pager, payload) => {
