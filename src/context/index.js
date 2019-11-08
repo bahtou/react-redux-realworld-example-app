@@ -113,7 +113,9 @@ const initailState = {
     tagList: [],
     inProgress: null
   },
-  home: {},
+  home: {
+    tags: []
+  },
   profile: {},
   settings: {
     inProgress: null
@@ -312,7 +314,12 @@ function appStateReducer(state, action) {
           ...state.common,
           viewChangeCounter: state.common.viewChangeCounter + 1
         },
-        auth: {},
+        auth: {
+          username: '',
+          email: '',
+          password: '',
+          inProgress: null
+        },
       };
     // case ASYNC_START:
     case UPDATE_FIELD_AUTH:
@@ -395,7 +402,15 @@ function appStateReducer(state, action) {
     case EDITOR_PAGE_UNLOADED:
       return {
         ...state,
-        editor: {}
+        editor: {
+          articleSlug: '',
+          title: '',
+          description: '',
+          body: '',
+          tagInput: '',
+          tagList: [],
+          inProgress: null
+        }
       };
     // case HOME_PAGE_UNLOADED:
     // case PROFILE_PAGE_UNLOADED:
