@@ -1,49 +1,49 @@
+import React, { useEffect } from 'react';
+
 import ArticleMeta from './ArticleMeta';
 import CommentContainer from './CommentContainer';
-import React, { useEffect } from 'react';
 import agent from '../../agent';
-import { connect } from 'react-redux';
 import marked from 'marked';
 import { ARTICLE_PAGE_LOADED, ARTICLE_PAGE_UNLOADED } from '../../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../../context';
 
-const mapStateToProps = state => ({
-  ...state.article,
-  currentUser: state.common.currentUser
-});
 
-const mapDispatchToProps = dispatch => ({
-  onLoad: payload =>
-    dispatch({ type: ARTICLE_PAGE_LOADED, payload }),
-  onUnload: () =>
-    dispatch({ type: ARTICLE_PAGE_UNLOADED })
-});
+function Article({ match }) {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const { article, common } = appState;
+  const { comments, commentErrors } = article;
 
-function Article({ article, comments, commentErrors, currentUser, match, onLoad, onUnload }) {
   useEffect(() => {
-    onLoad(Promise.all([
-      agent.Articles.get(match.params.id),
-      agent.Comments.forArticle(match.params.id)
-    ]));
+    const main = async () => {
+      const payload = await Promise.all([
+        agent.Articles.get(match.params.id),
+        agent.Comments.forArticle(match.params.id)
+      ]);
 
-    return () => onUnload()
+      appDispatch({ type: ARTICLE_PAGE_LOADED, payload });
+    };
+
+    main();
+    return () => appDispatch({ type: ARTICLE_PAGE_UNLOADED });
   }, []);
 
-  if (!article) {
+
+  if (!article.article) {
     return null;
   }
 
-  const markup = { __html: marked(article.body, { sanitize: true }) };
-  const canModify = currentUser &&
-    currentUser.username === article.author.username;
+  const markup = { __html: marked(article.article.body, { sanitize: true }) };
+  const canModify = common.currentUser && common.currentUser.username === article.article.author.username;
   return (
     <div className="article-page">
 
       <div className="banner">
         <div className="container">
 
-          <h1>{article.title}</h1>
+          <h1>{article.article.title}</h1>
           <ArticleMeta
-            article={article}
+            article={article.article}
             canModify={canModify} />
 
         </div>
@@ -58,7 +58,7 @@ function Article({ article, comments, commentErrors, currentUser, match, onLoad,
 
             <ul className="tag-list">
               {
-                article.tagList.map(tag => {
+                article.article.tagList.map(tag => {
                   return (
                     <li
                       className="tag-default tag-pill tag-outline"
@@ -83,11 +83,12 @@ function Article({ article, comments, commentErrors, currentUser, match, onLoad,
             comments={comments || []}
             errors={commentErrors}
             slug={match.params.id}
-            currentUser={currentUser} />
+            currentUser={common.currentUser} />
         </div>
       </div>
     </div>
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Article);
+
+export default Article;

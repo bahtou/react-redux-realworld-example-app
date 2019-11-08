@@ -1,48 +1,58 @@
+import React, { useEffect } from 'react';
 import Banner from './Banner';
 import MainView from './MainView';
-import React, { useEffect } from 'react';
 import Tags from './Tags';
 import agent from '../../agent';
-import { connect } from 'react-redux';
 import {
   HOME_PAGE_LOADED,
   HOME_PAGE_UNLOADED,
   APPLY_TAG_FILTER
 } from '../../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../../context';
 
 const Promise = global.Promise;
 
-const mapStateToProps = state => ({
-  ...state.home,
-  appName: state.common.appName,
-  token: state.common.token
-});
+function Home() {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const { common, home } = appState;
 
-const mapDispatchToProps = dispatch => ({
-  onClickTag: (tag, pager, payload) =>
-    dispatch({ type: APPLY_TAG_FILTER, tag, pager, payload }),
-  onLoad: (tab, pager, payload) =>
-    dispatch({ type: HOME_PAGE_LOADED, tab, pager, payload }),
-  onUnload: () =>
-    dispatch({  type: HOME_PAGE_UNLOADED })
-});
-
-function Home({ appName, onClickTag, onLoad, onUnload, tags, token }) {
   useEffect(() => {
-    const tab = token ? 'feed' : 'all';
-    const articlesPromise = token
+    const tab = common.token ? 'feed' : 'all';
+    const articlesPromise = common.token
       ? agent.Articles.feed
       : agent.Articles.all;
 
-    onLoad(tab, articlesPromise, Promise.all([agent.Tags.getAll(), articlesPromise()]));
+    async function main() {
+      const results = await Promise.all([agent.Tags.getAll(), articlesPromise()]);
 
-    return () => onUnload();
+      appDispatch({
+        type: HOME_PAGE_LOADED,
+        payload: {
+          tab,
+          pager: articlesPromise,
+          tags: results[0].tags,
+          articles: results[1].articles,
+          articlescount: results[1].articlesCount,
+          currentPage: 0
+        }
+      });
+    };
+
+    main();
+    return () => appDispatch({  type: HOME_PAGE_UNLOADED });
   }, []);
+
+  const onClickTag = (tag, pager, payload) => {
+    appDispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
+  };
 
   return (
     <div className="home-page">
-
-      <Banner token={token} appName={appName} />
+      {common.token
+        ? null
+        : <Banner appName={common.appName} />
+      }
 
       <div className="container page">
         <div className="row">
@@ -54,7 +64,7 @@ function Home({ appName, onClickTag, onLoad, onUnload, tags, token }) {
               <p>Popular Tags</p>
 
               <Tags
-                tags={tags}
+                tags={home.tags}
                 onClickTag={onClickTag} />
 
             </div>
@@ -66,4 +76,4 @@ function Home({ appName, onClickTag, onLoad, onUnload, tags, token }) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;

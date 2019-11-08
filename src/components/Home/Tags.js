@@ -1,16 +1,16 @@
 import React from 'react';
 import agent from '../../agent';
 
-const Tags = props => {
-  const tags = props.tags;
+
+const Tags = ({ tags, onClickTag }) => {
   if (tags) {
     return (
       <div className="tag-list">
         {
           tags.map(tag => {
-            const handleClick = ev => {
+            const handleClick = async ev => {
               ev.preventDefault();
-              props.onClickTag(tag, page => agent.Articles.byTag(tag, page), agent.Articles.byTag(tag));
+              onClickTag(tag, page => agent.Articles.byTag(tag, page), await agent.Articles.byTag(tag));
             };
 
             return (
@@ -32,5 +32,6 @@ const Tags = props => {
     );
   }
 };
+
 
 export default Tags;

@@ -1,7 +1,8 @@
-import ListErrors from './ListErrors';
 import React, { useEffect }  from 'react';
+import { useHistory } from 'react-router-dom';
+
+import ListErrors from './ListErrors';
 import agent from '../agent';
-import { connect } from 'react-redux';
 import {
   ADD_TAG,
   EDITOR_PAGE_LOADED,
@@ -10,36 +11,18 @@ import {
   EDITOR_PAGE_UNLOADED,
   UPDATE_FIELD_EDITOR
 } from '../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../context';
 
 
-const mapStateToProps = state => ({
-  ...state.editor
-});
+function Editor({ match, errors }) {
+  const history = useHistory();
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const { editor } = appState;
+  const { articleSlug, title, description, body, tagList, tagInput, inProgress } = editor;
 
-const mapDispatchToProps = dispatch => ({
-  onAddTag: () =>
-    dispatch({ type: ADD_TAG }),
-  onLoad: payload =>
-    dispatch({ type: EDITOR_PAGE_LOADED, payload }),
-  onRemoveTag: tag =>
-    dispatch({ type: REMOVE_TAG, tag }),
-  onSubmit: payload =>
-    dispatch({ type: ARTICLE_SUBMITTED, payload }),
-  onUnload: payload =>
-    dispatch({ type: EDITOR_PAGE_UNLOADED }),
-  onUpdateField: (key, value) =>
-    dispatch({ type: UPDATE_FIELD_EDITOR, key, value })
-});
-
-function Editor({
-  match,
-  articleSlug, title='', description='', body='', tagList, tagInput='',
-  errors, inProgress,
-  onAddTag, onLoad, onRemoveTag, onSubmit, onUnload, onUpdateField
-}) {
-  const updateFieldEvent = key => ev => onUpdateField(key, ev.target.value);
-  // const changeTitle = updateFieldEvent('title');
-  const changeTitle = ev => onUpdateField('title', ev.target.value);
+  const updateFieldEvent = key => ev => appDispatch({ type: UPDATE_FIELD_EDITOR, key, value: ev.target.value });
+  const changeTitle = updateFieldEvent('title');
   const changeDescription = updateFieldEvent('description');
   const changeBody = updateFieldEvent('body');
   const changeTagInput = updateFieldEvent('tagInput');
@@ -47,45 +30,52 @@ function Editor({
   const watchForEnter = ev => {
     if (ev.keyCode === 13) {
       ev.preventDefault();
-      onAddTag();
+      appDispatch({ type: ADD_TAG });
     }
   };
 
   const removeTagHandler = tag => () => {
-    onRemoveTag(tag);
+    appDispatch({ type: REMOVE_TAG, tag });
   };
 
-  const submitForm = ev => {
+  const submitForm = async ev => {
     ev.preventDefault();
     const article = { title, description, body, tagList };
     const slug = { slug: articleSlug };
-    const promise = articleSlug ?
-      agent.Articles.update(Object.assign(article, slug)) :
-      agent.Articles.create(article);
+    const payload = articleSlug ?
+      await agent.Articles.update(Object.assign(article, slug)) :
+      await agent.Articles.create(article);
 
-    onSubmit(promise);
+    appDispatch({ type: ARTICLE_SUBMITTED, payload });
+    history.push(`/article/${payload.article.slug}`);
   };
 
   useEffect(() => {
+    async function getArticles(slug) {
+      const payload = await agent.Articles.get(slug)
+      appDispatch({ type: EDITOR_PAGE_LOADED, payload });
+    };
+
     if (match.params.slug) {
-      return onLoad(agent.Articles.get(match.params.slug));
+      return getArticles(match.params.slug);
     }
 
-    onLoad(null);
-
-    return () => onUnload();
+    appDispatch({ type: EDITOR_PAGE_LOADED, payload: null });
+    return () => appDispatch({ type: EDITOR_PAGE_UNLOADED });
   }, []);
 
   useEffect(() => {
+    async function getArticles(slug) {
+      const payload = await agent.Articles.get(slug)
+      appDispatch({ type: EDITOR_PAGE_LOADED, payload });
+    };
+
     if (match.params.slug) {
-      onUnload();
-      return onLoad(agent.Articles.get(match.params.slug));
+      return getArticles(match.params.slug);
     }
 
-    onLoad(null);
-  }, [match]);
-
-  console.log('title', title);
+    appDispatch({ type: EDITOR_PAGE_LOADED, payload: null });
+  }, [match.params.slug]);
 
   return (
     <div className="editor-page">
@@ -170,4 +160,4 @@ function Editor({
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Editor);
+export default Editor;

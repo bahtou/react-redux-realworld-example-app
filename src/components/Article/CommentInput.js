@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import agent from '../../agent';
-import { connect } from 'react-redux';
 import { ADD_COMMENT } from '../../constants/actionTypes';
+import { useAppDispatch  } from '../../context';
 
 
-const mapDispatchToProps = dispatch => ({
-  onSubmit: payload =>
-    dispatch({ type: ADD_COMMENT, payload })
-});
-
-function CommentInput({ currentUser, slug, onSubmit }) {
+function CommentInput({ currentUser, slug }) {
   const [body, setBody] = useState('');
+  const appDispatch = useAppDispatch();
 
-  const createComment = ev => {
+  const createComment = async ev => {
     ev.preventDefault();
-    const payload = agent.Comments.create(slug, { body: body });
+    const payload = await agent.Comments.create(slug, { body: body });
     setBody('');
-    onSubmit(payload);
+    appDispatch({ type: ADD_COMMENT, payload });
   };
 
   return (
@@ -45,4 +41,4 @@ function CommentInput({ currentUser, slug, onSubmit }) {
 }
 
 
-export default connect(() => ({}), mapDispatchToProps)(CommentInput);
+export default CommentInput;

@@ -1,20 +1,19 @@
-import { Link } from 'react-router-dom';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import agent from '../../agent';
-import { connect } from 'react-redux';
 import { DELETE_ARTICLE } from '../../constants/actionTypes';
+import { useAppDispatch  } from '../../context';
 
-const mapDispatchToProps = dispatch => ({
-  onClickDelete: payload =>
-    dispatch({ type: DELETE_ARTICLE, payload })
-});
 
-const ArticleActions = props => {
-  const article = props.article;
-  const del = () => {
-    props.onClickDelete(agent.Articles.del(article.slug))
+const ArticleActions = ({ canModify, article }) => {
+  const appDispatch = useAppDispatch();
+
+  const del = async () => {
+   const payload = await agent.Articles.del(article.slug);
+   appDispatch({ type: DELETE_ARTICLE, payload })
   };
-  if (props.canModify) {
+
+  if (canModify) {
     return (
       <span>
 
@@ -38,4 +37,5 @@ const ArticleActions = props => {
   );
 };
 
-export default connect(() => ({}), mapDispatchToProps)(ArticleActions);
+
+export default ArticleActions;

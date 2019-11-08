@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAppState } from '../context';
 
 
 const LoggedOutView = ({ currentUser }) => {
@@ -71,18 +72,21 @@ const LoggedInView = ({ currentUser })=> {
   return null;
 };
 
-function Header({ appName, currentUser }) {
+function Header() {
+  const appState = useAppState();
+  const { common } = appState;
+
   return (
     <nav className="navbar navbar-light">
       <div className="container">
 
         <Link to="/" className="navbar-brand">
-          {appName.toLowerCase()}
+          {common.appName.toLowerCase()}
         </Link>
 
-        <LoggedOutView currentUser={currentUser} />
+        <LoggedOutView currentUser={common.currentUser} />
 
-        <LoggedInView currentUser={currentUser} />
+        <LoggedInView currentUser={common.currentUser} />
       </div>
     </nav>
   );

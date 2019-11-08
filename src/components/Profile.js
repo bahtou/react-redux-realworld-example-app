@@ -1,14 +1,15 @@
-import ArticleList from './ArticleList';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
+import ArticleList from './ArticleList';
 import agent from '../agent';
-import { connect } from 'react-redux';
 import {
   FOLLOW_USER,
   UNFOLLOW_USER,
   PROFILE_PAGE_LOADED,
   PROFILE_PAGE_UNLOADED
 } from '../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../context';
 
 
 const EditProfileSettings = ({ isUser }) => {
@@ -57,38 +58,35 @@ const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  ...state.articleList,
-  currentUser: state.common.currentUser,
-  profile: state.profile
-});
+function Profile({ match }) {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const { common, articleList, profile } = appState;
+  const { currentUser } = common;
+  const { pager, articles, articlesCount, currentPage } = articleList;
 
-const mapDispatchToProps = dispatch => ({
-  onFollow: username => dispatch({
-    type: FOLLOW_USER,
-    payload: agent.Profile.follow(username)
-  }),
-  onLoad: payload => dispatch({ type: PROFILE_PAGE_LOADED, payload }),
-  onUnfollow: username => dispatch({
-    type: UNFOLLOW_USER,
-    payload: agent.Profile.unfollow(username)
-  }),
-  onUnload: () => dispatch({ type: PROFILE_PAGE_UNLOADED })
-});
-
-function Profile({
-  match,
-  currentUser, pager, articles, articlesCount, currentPage, profile,
-  onFollow, onUnfollow, onLoad, onUnload
-}) {
   useEffect(() => {
-    onLoad(Promise.all([
-      agent.Profile.get(match.params.username),
-      agent.Articles.byAuthor(match.params.username)
-    ]));
+    const main = async () => {
+      const payload = await Promise.all([
+        agent.Profile.get(match.params.username),
+        agent.Articles.byAuthor(match.params.username)
+      ]);
 
-    return () => onUnload();
+      appDispatch({ type: PROFILE_PAGE_LOADED, payload });
+    };
+
+    main();
+    return () => appDispatch({ type: PROFILE_PAGE_UNLOADED });
   }, []);
+
+  const onFollow = async username => appDispatch({
+    type: FOLLOW_USER,
+    payload: await agent.Profile.follow(username)
+  });
+  const onUnfollow = async username => appDispatch({
+    type: UNFOLLOW_USER,
+    payload: await agent.Profile.unfollow(username)
+  });
 
   const renderTabs = () => {
     return (
@@ -168,5 +166,4 @@ function Profile({
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
-export { Profile, mapStateToProps };
+export default Profile;

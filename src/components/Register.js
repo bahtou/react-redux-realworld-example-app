@@ -1,46 +1,33 @@
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ListErrors from './ListErrors';
-import React, { useEffect } from 'react';
 import agent from '../agent';
-import { connect } from 'react-redux';
 import {
   UPDATE_FIELD_AUTH,
   REGISTER,
   REGISTER_PAGE_UNLOADED
 } from '../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../context';
 
 
-const mapStateToProps = state => ({ ...state.auth });
+function Register({ errors }) {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const { auth } = appState;
+  const { email, password, username,inProgress } = auth;
 
-const mapDispatchToProps = dispatch => ({
-  onChangeEmail: value =>
-    dispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value }),
-  onChangePassword: value =>
-    dispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value }),
-  onChangeUsername: value =>
-    dispatch({ type: UPDATE_FIELD_AUTH, key: 'username', value }),
-  onSubmit: (username, email, password) => {
-    const payload = agent.Auth.register(username, email, password);
-    dispatch({ type: REGISTER, payload })
-  },
-  onUnload: () =>
-    dispatch({ type: REGISTER_PAGE_UNLOADED })
-});
+  const changeEmail = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value: ev.target.value });
+  const changePassword = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: ev.target.value });
+  const changeUsername = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'username', value: email.target.value });
 
-function Register({
-  email, password, username, errors, inProgress,
-  onChangeEmail, onChangePassword, onChangeUsername, onSubmit, onUnload
- }) {
-  const changeEmail = ev => onChangeEmail(ev.target.value);
-  const changePassword = ev => onChangePassword(ev.target.value);
-  const changeUsername = ev => onChangeUsername(ev.target.value);
-  const submitForm = (username, email, password) => ev => {
+  const submitForm = (username, email, password) => async ev => {
     ev.preventDefault();
-    onSubmit(username, email, password);
+    const payload = await agent.Auth.register(username, email, password);
+    appDispatch({ type: REGISTER, payload })
   };
 
   useEffect(() => {
-    return () => onUnload();
+    return () => appDispatch({ type: REGISTER_PAGE_UNLOADED });
   }, []);
 
   return (
@@ -106,4 +93,4 @@ function Register({
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default Register;

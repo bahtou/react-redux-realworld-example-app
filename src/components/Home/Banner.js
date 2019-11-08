@@ -1,9 +1,7 @@
 import React from 'react';
 
-const Banner = ({ appName, token }) => {
-  if (token) {
-    return null;
-  }
+
+const Banner = ({ appName }) => {
   return (
     <div className="banner">
       <div className="container">
@@ -15,5 +13,6 @@ const Banner = ({ appName, token }) => {
     </div>
   );
 };
+
 
 export default Banner;

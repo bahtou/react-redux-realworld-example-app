@@ -1,43 +1,56 @@
-import { Link } from 'react-router-dom';
-import ListErrors from './ListErrors';
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
+
+import ListErrors from './ListErrors';
 import agent from '../agent';
-import { connect } from 'react-redux';
 import {
   UPDATE_FIELD_AUTH,
   LOGIN,
   LOGIN_PAGE_UNLOADED
 } from '../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../context';
 
 
-const mapStateToProps = state => ({ ...state.auth });
+function Login ({ errors }) {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const history = useHistory();
 
-const mapDispatchToProps = dispatch => ({
-  onChangeEmail: value =>
-    dispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value }),
-  onChangePassword: value =>
-    dispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value }),
-  onSubmit: (email, password) =>
-    dispatch({ type: LOGIN, payload: agent.Auth.login(email, password) }),
-  onUnload: () =>
-    dispatch({ type: LOGIN_PAGE_UNLOADED })
-});
+  const  { auth } = appState;
+  const { email, password, inProgress } = auth;
 
-function Login ({
-  email, password,
-  errors, inProgress,
-  onChangeEmail, onChangePassword, onSubmit, onUnload
-}) {
+  const changeEmail = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value: ev.target.value });
+  const changePassword = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: ev.target.value });
 
-  const changeEmail = ev => onChangeEmail(ev.target.value);
-  const changePassword = ev => onChangePassword(ev.target.value);
-  const submitForm = (email, password) => ev => {
+  const submitForm = (email, password) => async ev => {
     ev.preventDefault();
-    onSubmit(email, password);
+
+    const { user, error } = await agent.Auth.login(email, password);
+    if (!error) {
+      window.localStorage.setItem('jwt', user.token);
+      agent.setToken(user.token);
+
+      appDispatch({
+        type: LOGIN,
+        payload: {
+          user,
+          token:  user.token
+        }
+      });
+
+      history.push('/');
+      return;
+    }
+
+    appDispatch({
+      type: LOGIN,
+      error
+    });
   };
 
   useEffect(() => {
-    return () => onUnload();
+    return () => appDispatch({ type: LOGIN_PAGE_UNLOADED });
   }, []);
 
   return (
@@ -94,4 +107,4 @@ function Login ({
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;

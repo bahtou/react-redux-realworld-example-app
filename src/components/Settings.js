@@ -1,12 +1,13 @@
-import ListErrors from './ListErrors';
 import React, { useEffect, useState } from 'react';
+import { useHistory } from "react-router-dom";
+
+import ListErrors from './ListErrors';
 import agent from '../agent';
-import { connect } from 'react-redux';
 import {
   SETTINGS_SAVED,
-  SETTINGS_PAGE_UNLOADED,
   LOGOUT
 } from '../constants/actionTypes';
+import { useAppState, useAppDispatch  } from '../context';
 
 
 function SettingsForm({ currentUser, onSubmitForm }) {
@@ -16,10 +17,10 @@ function SettingsForm({ currentUser, onSubmitForm }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [inProgress, setInProgress] = useState(false);
-  console.log('image', username);
 
   const submitForm = ev => {
     ev.preventDefault();
+    setInProgress(true);
 
     const user = { image, username, bio, email, password };
     if (!user.password) {
@@ -100,19 +101,26 @@ function SettingsForm({ currentUser, onSubmitForm }) {
   );
 }
 
-const mapStateToProps = state => ({
-  ...state.settings,
-  currentUser: state.common.currentUser
-});
+function Settings({ errors }) {
+  const history = useHistory();
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+  const { common:{ currentUser }} = appState;
 
-const mapDispatchToProps = dispatch => ({
-  onClickLogout: () => dispatch({ type: LOGOUT }),
-  onSubmitForm: user =>
-    dispatch({ type: SETTINGS_SAVED, payload: agent.Auth.save(user) }),
-  onUnload: () => dispatch({ type: SETTINGS_PAGE_UNLOADED })
-});
+  const onClickLogout = () => {
+    appDispatch({ type: LOGOUT });
 
-function Settings({ errors, currentUser, onSubmitForm, onClickLogout }) {
+    window.localStorage.setItem('jwt', '');
+    agent.setToken(null);
+
+    history.push('/');
+  };
+
+  const onSubmitForm = async user => {
+    appDispatch({ type: SETTINGS_SAVED, payload: await agent.Auth.save(user) });
+    history.push('/');
+  };
+
   return (
     <div className="settings-page">
       <div className="container page">
@@ -143,4 +151,4 @@ function Settings({ errors, currentUser, onSubmitForm, onClickLogout }) {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);
+export default Settings;
