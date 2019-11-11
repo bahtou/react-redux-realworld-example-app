@@ -12,17 +12,17 @@ import ProfileFavorites from '../components/ProfileFavorites';
 import Register from '../components/Register';
 import Settings from '../components/Settings';
 
+import { useLocalStorage } from '../hooks';
 import { AppProvider } from '../context';
 import { useCommonState, useCommonDispatch  } from '../context/common';
 
 
 function App() {
+  const [token] = useLocalStorage('jwt');
   const common = useCommonState();
   const commonDispatch = useCommonDispatch();
 
   useEffect(() => {
-    const token = window.localStorage.getItem('jwt');
-
     async function main() {
       let result = {};
 

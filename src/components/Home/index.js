@@ -10,8 +10,8 @@ import {
 } from '../../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../../context';
 import { useCommonState, useCommonDispatch  } from '../../context/common';
+import { useFetch } from '../../hooks';
 
-const Promise = global.Promise;
 
 function Home() {
   const appState = useAppState();
@@ -21,35 +21,33 @@ function Home() {
   const common = useCommonState();
   const commonDispatch = useCommonDispatch();
 
+  const tab = common.token ? 'feed' : 'all';
+  const articlesPromise = common.token
+    ? agent.Articles.feed
+    : agent.Articles.all;
+  const { response, error, isLoading } = useFetch(agent.Tags.getAll(), articlesPromise());
+
   useEffect(() => {
-    const tab = common.token ? 'feed' : 'all';
-    const articlesPromise = common.token
-      ? agent.Articles.feed
-      : agent.Articles.all;
+    if (!response) return;
 
-    async function main() {
-      const results = await Promise.all([agent.Tags.getAll(), articlesPromise()]);
+    appDispatch({
+      type: HOME_PAGE_LOADED,
+      payload: {
+        tab,
+        pager: articlesPromise,
+        tags: response[0].tags,
+        articles: response[1].articles,
+        articlescount: response[1].articlesCount,
+        currentPage: 0
+      }
+    });
 
-      appDispatch({
-        type: HOME_PAGE_LOADED,
-        payload: {
-          tab,
-          pager: articlesPromise,
-          tags: results[0].tags,
-          articles: results[1].articles,
-          articlescount: results[1].articlesCount,
-          currentPage: 0
-        }
-      });
-    };
-
-    main();
     return () => {
       // which to dispatch first? top-bottom, bottom-top?
       appDispatch({  type: HOME_PAGE_UNLOADED });
       commonDispatch({ type: HOME_PAGE_UNLOADED });
     };
-  }, []);
+  }, [response]);
 
   const onClickTag = (tag, pager, payload) => {
     appDispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });

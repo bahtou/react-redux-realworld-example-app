@@ -10,26 +10,23 @@ import {
   PROFILE_PAGE_UNLOADED
 } from '../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../context';
+import { useFetch } from '../hooks';
 
 
 const EditProfileSettings = ({ isUser }) => {
-  if (isUser) {
-    return (
-      <Link
-        to="/settings"
-        className="btn btn-sm btn-outline-secondary action-btn">
-        <i className="ion-gear-a"></i> Edit Profile Settings
-      </Link>
-    );
-  }
+  if (!isUser) return null;
 
-  return null;
+  return (
+    <Link
+      to="/settings"
+      className="btn btn-sm btn-outline-secondary action-btn">
+      <i className="ion-gear-a"></i> Edit Profile Settings
+    </Link>
+  );
 };
 
 const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
-  if (isUser) {
-    return null;
-  }
+  if (isUser) return null;
 
   let classes = 'btn btn-sm action-btn';
   if (user.following) {
@@ -59,29 +56,27 @@ const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
 };
 
 function ProfileFavorites({ match }) {
+  const { response, error, isLoading } = useFetch(
+    agent.Profile.get(match.params.username),
+    agent.Articles.favoritedBy(match.params.username));
   const appState = useAppState();
   const appDispatch = useAppDispatch();
+
   const { common, articleList, profile } = appState;
   const { currentUser } = common;
   const { pager, articles, articlesCount, currentPage } = articleList;
 
   useEffect(() => {
-    const main = async () => {
-      const payload = await Promise.all([
-        agent.Profile.get(match.params.username),
-        agent.Articles.favoritedBy(match.params.username)
-      ]);
+    if (!response) return;
 
-      appDispatch({
-        type: PROFILE_PAGE_LOADED,
-        pager:async page => await agent.Articles.favoritedBy(this.props.match.params.username, page),
-        payload
-      });
-    };
+    appDispatch({
+      type: PROFILE_PAGE_LOADED,
+      pager: async page => await agent.Articles.favoritedBy(match.params.username, page),
+      payload: response
+    });
 
-    main();
     return () => appDispatch({ type: PROFILE_PAGE_UNLOADED });
-  }, []);
+  }, [response]);
 
   const onFollow = async username => appDispatch({
     type: FOLLOW_USER,
@@ -114,9 +109,7 @@ function ProfileFavorites({ match }) {
     );
   };
 
-  if (!profile) {
-    return null;
-  }
+  if (!profile) return null;
 
   const isUser = currentUser &&
     profile.username === currentUser.username;

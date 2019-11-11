@@ -7,6 +7,8 @@ import {
   SETTINGS_SAVED,
   LOGOUT
 } from '../constants/actionTypes';
+
+import { useLocalStorage } from '../hooks';
 import { useAppState, useAppDispatch  } from '../context';
 import { useCommonState, useCommonDispatch  } from '../context/common';
 
@@ -103,6 +105,7 @@ function SettingsForm({ currentUser, onSubmitForm }) {
 }
 
 function Settings({ errors }) {
+  const [, setJwtToken] = useLocalStorage('jwt');
   const history = useHistory();
   const { currentUser } = useCommonState();
   const commonDispatch = useCommonDispatch();
@@ -110,7 +113,7 @@ function Settings({ errors }) {
   const onClickLogout = () => {
     commonDispatch({ type: LOGOUT });
 
-    window.localStorage.setItem('jwt', '');
+    setJwtToken('');
     agent.setToken(null);
 
     history.push('/');

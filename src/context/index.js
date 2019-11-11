@@ -100,7 +100,9 @@ const initailState = {
     tagList: [],
     inProgress: null
   },
-  home: {},
+  home: {
+    tags: []
+  },
   profile: {},
   settings: {
     inProgress: null
@@ -218,8 +220,12 @@ function appStateReducer(state, action) {
         //   ...state.common,
         //   viewChangeCounter: state.common.viewChangeCounter + 1
         // },
-        articleList: {},
-        home: {}
+        articleList: {
+          ...initailState.articleList
+        },
+        home: {
+          ...initailState.home
+        }
       };
     case CHANGE_TAB:
       return {
@@ -248,7 +254,7 @@ function appStateReducer(state, action) {
           articlesCount: action.payload[1].articlesCount,
           currentPage: 0
         }
-      }
+      };
     case PROFILE_FAVORITES_PAGE_LOADED:
       return {
         ...state,
@@ -263,7 +269,9 @@ function appStateReducer(state, action) {
     case PROFILE_PAGE_UNLOADED:
       return {
         ...state,
-        profile: {}
+        profile: {
+          ...initailState.profile
+        }
       };
     case PROFILE_FAVORITES_PAGE_UNLOADED:
       return {
@@ -272,7 +280,9 @@ function appStateReducer(state, action) {
           ...state.common,
           viewChangeCounter: state.common.viewChangeCounter + 1
         },
-        articleList: {},
+        articleList: {
+          ...initailState.articleList
+        },
       };
 
     /** AUTH reducer */
@@ -300,7 +310,9 @@ function appStateReducer(state, action) {
           ...state.common,
           viewChangeCounter: state.common.viewChangeCounter + 1
         },
-        auth: {},
+        auth: {
+          ...initailState.auth
+        },
       };
     // case ASYNC_START:
     case UPDATE_FIELD_AUTH:
@@ -309,6 +321,97 @@ function appStateReducer(state, action) {
         auth: {
           ...state.auth,
           [action.key]: action.value
+        }
+      };
+    /** COMMON reducer */
+    case APP_LOAD:
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          token: action.token || null,
+          appLoaded: true,
+          currentUser: action.payload ? action.payload.user : null
+        }
+      };
+    case REDIRECT:
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          redirectTo: null
+        }
+      };
+    case LOGOUT:
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          redirectTo: '/',
+          token: null,
+          currentUser: null
+        }
+      };
+    case ARTICLE_SUBMITTED:
+      const redirectUrl = `/article/${action.payload.article.slug}`;
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          redirectTo: redirectUrl,
+        },
+        editor: {
+          ...state.editor,
+          inProgress: null,
+          errors: action.error ? action.payload.errors : null
+        }
+       };
+    case SETTINGS_SAVED:
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          redirectTo: action.error ? null : '/',
+          currentUser: action.error ? null : action.payload.user
+        },
+        settings: {
+          ...state.settings,
+          inProgress: false,
+          errors: action.error ? action.payload.errors : null
+        }
+      };
+    // case LOGIN:
+    // case REGISTER:
+    case DELETE_ARTICLE:
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          redirectTo: '/'
+        }
+      };
+    // case ARTICLE_PAGE_UNLOADED:
+    case EDITOR_PAGE_UNLOADED:
+      return {
+        ...state,
+        editor: {
+          ...initailState.editor
+        }
+      };
+    // case HOME_PAGE_UNLOADED:
+    // case PROFILE_PAGE_UNLOADED:
+    // case PROFILE_FAVORITES_PAGE_UNLOADED:
+    // case LOGIN_PAGE_UNLOADED:
+    case SETTINGS_PAGE_UNLOADED:
+      return {
+        ...state,
+        common: {
+          ...state.common,
+          viewChangeCounter: state.common.viewChangeCounter + 1
+        },
+        settings: {
+          ...state.settings,
+          inProgress: true
         }
       };
     /** EDITOR reducer */
