@@ -8,7 +8,6 @@ import {
   EDITOR_PAGE_LOADED,
   REMOVE_TAG,
   ARTICLE_SUBMITTED,
-  EDITOR_PAGE_UNLOADED,
   UPDATE_FIELD_EDITOR
 } from '../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../context';
@@ -57,21 +56,7 @@ function Editor({ match, errors }) {
     };
 
     if (match.params.slug) {
-      return getArticles(match.params.slug);
-    }
-
-    appDispatch({ type: EDITOR_PAGE_LOADED, payload: null });
-    return () => appDispatch({ type: EDITOR_PAGE_UNLOADED });
-  }, []);
-
-  useEffect(() => {
-    async function getArticles(slug) {
-      const payload = await agent.Articles.get(slug)
-      appDispatch({ type: EDITOR_PAGE_LOADED, payload });
-    };
-
-    if (match.params.slug) {
-      return getArticles(match.params.slug);
+      getArticles(match.params.slug);
     }
 
     appDispatch({ type: EDITOR_PAGE_LOADED, payload: null });

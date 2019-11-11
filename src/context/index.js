@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import {
   ARTICLE_PAGE_LOADED,
   ARTICLE_PAGE_UNLOADED,
@@ -232,8 +232,12 @@ function appStateReducer(state, action) {
           ...state.common,
           viewChangeCounter: state.common.viewChangeCounter + 1
         },
-        articleList: {},
-        home: {}
+        articleList: {
+          ...initailState.articleList
+        },
+        home: {
+          ...initailState.home
+        }
       };
     case CHANGE_TAB:
       return {
@@ -262,7 +266,7 @@ function appStateReducer(state, action) {
           articlesCount: action.payload[1].articlesCount,
           currentPage: 0
         }
-      }
+      };
     case PROFILE_FAVORITES_PAGE_LOADED:
       return {
         ...state,
@@ -277,7 +281,9 @@ function appStateReducer(state, action) {
     case PROFILE_PAGE_UNLOADED:
       return {
         ...state,
-        profile: {}
+        profile: {
+          ...initailState.profile
+        }
       };
     case PROFILE_FAVORITES_PAGE_UNLOADED:
       return {
@@ -286,7 +292,9 @@ function appStateReducer(state, action) {
           ...state.common,
           viewChangeCounter: state.common.viewChangeCounter + 1
         },
-        articleList: {},
+        articleList: {
+          ...initailState.articleList
+        },
       };
 
     /** AUTH reducer */
@@ -315,10 +323,7 @@ function appStateReducer(state, action) {
           viewChangeCounter: state.common.viewChangeCounter + 1
         },
         auth: {
-          username: '',
-          email: '',
-          password: '',
-          inProgress: null
+          ...initailState.auth
         },
       };
     // case ASYNC_START:
@@ -403,13 +408,7 @@ function appStateReducer(state, action) {
       return {
         ...state,
         editor: {
-          articleSlug: '',
-          title: '',
-          description: '',
-          body: '',
-          tagInput: '',
-          tagList: [],
-          inProgress: null
+          ...initailState.editor
         }
       };
     // case HOME_PAGE_UNLOADED:
@@ -529,7 +528,7 @@ function appStateReducer(state, action) {
 }
 
 function AppProvider({children}) {
-  const [state, dispatch] = React.useReducer(appStateReducer, initailState);
+  const [state, dispatch] = useReducer(appStateReducer, initailState);
 
   return (
     <AppStateContext.Provider value={state}>

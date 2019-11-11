@@ -9,14 +9,16 @@ import {
   LOGIN,
   LOGIN_PAGE_UNLOADED
 } from '../constants/actionTypes';
+
+import { useLocalStorage } from '../hooks';
 import { useAppState, useAppDispatch  } from '../context';
 
 
 function Login ({ errors }) {
+  const [, setJwtToken] = useLocalStorage('jwt', '');
   const appState = useAppState();
   const appDispatch = useAppDispatch();
   const history = useHistory();
-
   const  { auth } = appState;
   const { email, password, inProgress } = auth;
 
@@ -28,7 +30,7 @@ function Login ({ errors }) {
 
     const { user, error } = await agent.Auth.login(email, password);
     if (!error) {
-      window.localStorage.setItem('jwt', user.token);
+      setJwtToken(user.token);
       agent.setToken(user.token);
 
       appDispatch({

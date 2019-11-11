@@ -12,6 +12,7 @@ import ProfileFavorites from '../components/ProfileFavorites';
 import Register from '../components/Register';
 import Settings from '../components/Settings';
 
+import { useLocalStorage } from '../hooks';
 import {
   AppProvider,
   useAppState,
@@ -20,13 +21,12 @@ import {
 
 
 function App() {
+  const [token] = useLocalStorage('jwt');
   const appState = useAppState();
   const appDispatch = useAppDispatch();
   const { common } = appState;
 
   useEffect(() => {
-    const token = window.localStorage.getItem('jwt');
-
     async function main() {
       let result = {};
 

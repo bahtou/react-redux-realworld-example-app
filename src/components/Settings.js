@@ -7,6 +7,8 @@ import {
   SETTINGS_SAVED,
   LOGOUT
 } from '../constants/actionTypes';
+
+import { useLocalStorage } from '../hooks';
 import { useAppState, useAppDispatch  } from '../context';
 
 
@@ -102,6 +104,7 @@ function SettingsForm({ currentUser, onSubmitForm }) {
 }
 
 function Settings({ errors }) {
+  const [, setJwtToken] = useLocalStorage('jwt');
   const history = useHistory();
   const appState = useAppState();
   const appDispatch = useAppDispatch();
@@ -110,7 +113,7 @@ function Settings({ errors }) {
   const onClickLogout = () => {
     appDispatch({ type: LOGOUT });
 
-    window.localStorage.setItem('jwt', '');
+    setJwtToken('');
     agent.setToken(null);
 
     history.push('/');

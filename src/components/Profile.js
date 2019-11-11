@@ -10,6 +10,7 @@ import {
   PROFILE_PAGE_UNLOADED
 } from '../constants/actionTypes';
 import { useAppState, useAppDispatch  } from '../context';
+import { useFetch } from '../hooks';
 
 
 const EditProfileSettings = ({ isUser }) => {
@@ -59,25 +60,22 @@ const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
 };
 
 function Profile({ match }) {
+  const { response, error, isLoading } = useFetch(
+    agent.Profile.get(match.params.username),
+    agent.Articles.byAuthor(match.params.username));
   const appState = useAppState();
   const appDispatch = useAppDispatch();
+
   const { common, articleList, profile } = appState;
   const { currentUser } = common;
   const { pager, articles, articlesCount, currentPage } = articleList;
 
   useEffect(() => {
-    const main = async () => {
-      const payload = await Promise.all([
-        agent.Profile.get(match.params.username),
-        agent.Articles.byAuthor(match.params.username)
-      ]);
+    if (!response) return;
+    appDispatch({ type: PROFILE_PAGE_LOADED, payload: response });
 
-      appDispatch({ type: PROFILE_PAGE_LOADED, payload });
-    };
-
-    main();
     return () => appDispatch({ type: PROFILE_PAGE_UNLOADED });
-  }, []);
+  }, [response]);
 
   const onFollow = async username => appDispatch({
     type: FOLLOW_USER,
