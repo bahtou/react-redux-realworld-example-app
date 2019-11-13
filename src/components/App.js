@@ -1,8 +1,19 @@
-import agent from '../agent';
-import Header from './Header';
 import React, { useEffect } from 'react';
-import { APP_LOAD } from '../constants/actionTypes';
 import { Route, Switch } from 'react-router-dom';
+
+import agent from '../agent';
+
+import { APP_LOAD } from '../constants/actionTypes';
+import { AppProvider } from '../context';
+import { useCommonState, useCommonDispatch  } from '../context/common';
+import { ProfileProvider } from '../context/profile';
+import { ArticleProvider } from '../context/article';
+import { EditorProvider } from '../context/editor';
+import { ArticleListProvider } from '../context/articleList';
+import { AuthProvider } from '../context/auth';
+import { useLocalStorage } from '../hooks';
+
+import Header from './Header';
 import Article from '../components/Article';
 import Editor from '../components/Editor';
 import Home from '../components/Home';
@@ -12,14 +23,10 @@ import ProfileFavorites from '../components/ProfileFavorites';
 import Register from '../components/Register';
 import Settings from '../components/Settings';
 
-import { useLocalStorage } from '../hooks';
-import { AppProvider } from '../context';
-import { useCommonState, useCommonDispatch  } from '../context/common';
 
-
-function App() {
+const App = () => {
   const [token] = useLocalStorage('jwt');
-  const common = useCommonState();
+  const { appLoaded } = useCommonState();
   const commonDispatch = useCommonDispatch();
 
   useEffect(() => {
@@ -43,20 +50,66 @@ function App() {
     main();
   }, []);
 
-  if (common.appLoaded) {
+  if (appLoaded) {
     return (
       <div>
         <Header />
           <Switch>
-            <Route exact path="/" component={Home}/>
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-            <Route path="/editor/:slug" component={Editor} />
-            <Route path="/editor" component={Editor} />
-            <Route path="/article/:id" component={Article} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/@:username/favorites" component={ProfileFavorites} />
-            <Route path="/@:username" component={Profile} />
+            <Route exact path="/">
+              <ArticleListProvider>
+                <Home />
+              </ArticleListProvider>
+            </Route>
+
+            <Route path="/login">
+              <AuthProvider>
+                <Login />
+              </AuthProvider>
+            </Route>
+
+            <Route path="/register">
+              <AuthProvider>
+                <Register />
+              </AuthProvider>
+            </Route>
+
+            <Route path="/editor/:slug">
+              <EditorProvider>
+                <Editor />
+              </EditorProvider>
+            </Route>
+
+            <Route path="/editor">
+              <EditorProvider>
+                <Editor />
+              </EditorProvider>
+            </Route>
+
+            <Route path="/article/:id">
+              <ArticleProvider>
+                <Article />
+              </ArticleProvider>
+            </Route>
+
+            <Route path="/settings">
+              <Settings />
+            </Route>
+
+            <Route path="/@:username/favorites">
+              <ProfileProvider>
+                <ArticleListProvider>
+                  <ProfileFavorites />
+                </ArticleListProvider>
+              </ProfileProvider>
+            </Route>
+
+            <Route path="/@:username">
+              <ProfileProvider>
+                <ArticleListProvider>
+                  <Profile />
+                </ArticleListProvider>
+              </ProfileProvider>
+            </Route>
           </Switch>
     </div>
     );
@@ -67,7 +120,7 @@ function App() {
       <Header />
     </AppProvider>
   );
-}
+};
 
 
 export default App;

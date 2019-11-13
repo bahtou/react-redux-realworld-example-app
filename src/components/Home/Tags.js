@@ -1,36 +1,36 @@
 import React from 'react';
 import agent from '../../agent';
+import { useAppState  } from '../../context';
 
 
-const Tags = ({ tags, onClickTag }) => {
-  if (tags) {
-    return (
-      <div className="tag-list">
-        {
-          tags.map(tag => {
-            const handleClick = async ev => {
-              ev.preventDefault();
-              onClickTag(tag, page => agent.Articles.byTag(tag, page), await agent.Articles.byTag(tag));
-            };
+const Tags = ({ onClickTag }) => {
+  const appState = useAppState();
+  const { home:{ tags }} = appState;
 
-            return (
-              <a
-                href=""
-                className="tag-default tag-pill"
-                key={tag}
-                onClick={handleClick}>
-                {tag}
-              </a>
-            );
-          })
-        }
-      </div>
-    );
-  } else {
-    return (
-      <div>Loading Tags...</div>
-    );
-  }
+  if (tags.length === 0)
+    return <div>Loading Tags...</div>;
+
+  return (
+    <div className="tag-list">
+      {tags.map(tag => {
+          const handleClick = async ev => {
+            ev.preventDefault();
+            onClickTag(tag, page => agent.Articles.byTag(tag, page), await agent.Articles.byTag(tag));
+          };
+
+          return (
+            <a
+              href=""
+              className="tag-default tag-pill"
+              key={tag}
+              onClick={handleClick}>
+              {tag}
+            </a>
+          );
+        })
+      }
+    </div>
+  );
 };
 
 

@@ -2,28 +2,27 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
 
-import ListErrors from './ListErrors';
 import agent from '../agent';
-import {
-  UPDATE_FIELD_AUTH,
-  LOGIN,
-  LOGIN_PAGE_UNLOADED
-} from '../constants/actionTypes';
+
+import { UPDATE_FIELD_AUTH, LOGIN } from '../constants/actionTypes';
 
 import { useLocalStorage } from '../hooks';
-import { useAppState, useAppDispatch  } from '../context';
+import { useAuthState, useAuthDispatch  } from '../context/auth';
+import { useCommonDispatch  } from '../context/common';
+import ListErrors from './ListErrors';
 
 
 function Login ({ errors }) {
   const [, setJwtToken] = useLocalStorage('jwt', '');
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
+  const auth = useAuthState();
+  const authDispatch = useAuthDispatch();
+  const commonDispatch = useCommonDispatch();
   const history = useHistory();
-  const  { auth } = appState;
+
   const { email, password, inProgress } = auth;
 
-  const changeEmail = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value: ev.target.value });
-  const changePassword = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: ev.target.value });
+  const changeEmail = ev => authDispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value: ev.target.value });
+  const changePassword = ev => authDispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: ev.target.value });
 
   const submitForm = (email, password) => async ev => {
     ev.preventDefault();
@@ -33,27 +32,18 @@ function Login ({ errors }) {
       setJwtToken(user.token);
       agent.setToken(user.token);
 
-      appDispatch({
-        type: LOGIN,
-        payload: {
-          user,
-          token:  user.token
-        }
-      });
+      authDispatch({ type: LOGIN });
+      commonDispatch({ type: LOGIN, payload: { user, token:  user.token } });
 
       history.push('/');
       return;
     }
 
-    appDispatch({
+    authDispatch({
       type: LOGIN,
       error
     });
   };
-
-  useEffect(() => {
-    return () => appDispatch({ type: LOGIN_PAGE_UNLOADED });
-  }, []);
 
   return (
     <div className="auth-page">

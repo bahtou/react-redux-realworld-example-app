@@ -1,8 +1,9 @@
 import React, { useEffect }  from 'react';
 import { useHistory } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-import ListErrors from './ListErrors';
 import agent from '../agent';
+
 import {
   ADD_TAG,
   EDITOR_PAGE_LOADED,
@@ -10,17 +11,20 @@ import {
   ARTICLE_SUBMITTED,
   UPDATE_FIELD_EDITOR
 } from '../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../context';
+import { useCommonDispatch  } from '../context/common';
+import { useEditorState, useEditorDispatch } from '../context/editor';
+import ListErrors from './ListErrors';
 
 
-function Editor({ match, errors }) {
+const Editor = ({ match, errors }) => {
   const history = useHistory();
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
-  const { editor } = appState;
+  const commonDispatch = useCommonDispatch();
+
+  const editor = useEditorState();
+  const editorDispatch = useEditorDispatch()
   const { articleSlug, title, description, body, tagList, tagInput, inProgress } = editor;
 
-  const updateFieldEvent = key => ev => appDispatch({ type: UPDATE_FIELD_EDITOR, key, value: ev.target.value });
+  const updateFieldEvent = key => ev => editorDispatch({ type: UPDATE_FIELD_EDITOR, key, value: ev.target.value });
   const changeTitle = updateFieldEvent('title');
   const changeDescription = updateFieldEvent('description');
   const changeBody = updateFieldEvent('body');
@@ -29,12 +33,12 @@ function Editor({ match, errors }) {
   const watchForEnter = ev => {
     if (ev.keyCode === 13) {
       ev.preventDefault();
-      appDispatch({ type: ADD_TAG });
+      editorDispatch({ type: ADD_TAG });
     }
   };
 
   const removeTagHandler = tag => () => {
-    appDispatch({ type: REMOVE_TAG, tag });
+    editorDispatch({ type: REMOVE_TAG, tag });
   };
 
   const submitForm = async ev => {
@@ -45,21 +49,22 @@ function Editor({ match, errors }) {
       await agent.Articles.update(Object.assign(article, slug)) :
       await agent.Articles.create(article);
 
-    appDispatch({ type: ARTICLE_SUBMITTED, payload });
+    editorDispatch({ type: ARTICLE_SUBMITTED, payload });
+    commonDispatch({ type: ARTICLE_SUBMITTED, payload });
     history.push(`/article/${payload.article.slug}`);
   };
 
   useEffect(() => {
     async function getArticles(slug) {
       const payload = await agent.Articles.get(slug)
-      appDispatch({ type: EDITOR_PAGE_LOADED, payload });
+      editorDispatch({ type: EDITOR_PAGE_LOADED, payload });
     };
 
     if (match.params.slug) {
       getArticles(match.params.slug);
+    } else {
+      editorDispatch({ type: EDITOR_PAGE_LOADED, payload: null });
     }
-
-    appDispatch({ type: EDITOR_PAGE_LOADED, payload: null });
   }, [match.params.slug]);
 
   return (
@@ -111,8 +116,7 @@ function Editor({ match, errors }) {
                     onKeyUp={watchForEnter} />
 
                   <div className="tag-list">
-                    {
-                      (tagList || []).map(tag => {
+                    {(tagList || []).map(tag => {
                         return (
                           <span className="tag-default tag-pill" key={tag}>
                             <i  className="ion-close-round"
@@ -142,7 +146,7 @@ function Editor({ match, errors }) {
       </div>
     </div>
   );
-}
+};
 
 
-export default Editor;
+export default withRouter(Editor);

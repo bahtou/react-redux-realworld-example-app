@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 
-import ListErrors from './ListErrors';
 import agent from '../agent';
-import {
-  SETTINGS_SAVED,
-  LOGOUT
-} from '../constants/actionTypes';
 
+import { SETTINGS_SAVED, LOGOUT } from '../constants/actionTypes';
 import { useLocalStorage } from '../hooks';
-import { useAppState, useAppDispatch  } from '../context';
 import { useCommonState, useCommonDispatch  } from '../context/common';
+import ListErrors from './ListErrors';
 
 
-function SettingsForm({ currentUser, onSubmitForm }) {
+const SettingsForm = ({ currentUser, onSubmitForm }) => {
   const [image, setImage] = useState('');
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
@@ -102,9 +98,9 @@ function SettingsForm({ currentUser, onSubmitForm }) {
       </fieldset>
     </form>
   );
-}
+};
 
-function Settings({ errors }) {
+const Settings = ({ errors }) => {
   const [, setJwtToken] = useLocalStorage('jwt');
   const history = useHistory();
   const { currentUser } = useCommonState();
@@ -151,7 +147,7 @@ function Settings({ errors }) {
       </div>
     </div>
   );
-}
+};
 
 
 export default Settings;

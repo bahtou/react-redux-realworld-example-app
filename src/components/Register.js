@@ -1,34 +1,31 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ListErrors from './ListErrors';
+
 import agent from '../agent';
-import {
-  UPDATE_FIELD_AUTH,
-  REGISTER,
-  REGISTER_PAGE_UNLOADED
-} from '../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../context';
+
+import { UPDATE_FIELD_AUTH, REGISTER } from '../constants/actionTypes';
+import { useAuthState, useAuthDispatch  } from '../context/auth';
+import { useCommonDispatch  } from '../context/common';
+import ListErrors from './ListErrors';
 
 
-function Register({ errors }) {
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
-  const { auth } = appState;
+const Register = ({ errors }) => {
+  const auth = useAuthState();
+  const authDispatch = useAuthDispatch();
+  const commonDispatch = useCommonDispatch();
+
   const { email, password, username,inProgress } = auth;
 
-  const changeEmail = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value: ev.target.value });
-  const changePassword = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: ev.target.value });
-  const changeUsername = ev => appDispatch({ type: UPDATE_FIELD_AUTH, key: 'username', value: email.target.value });
+  const changeEmail = ev => authDispatch({ type: UPDATE_FIELD_AUTH, key: 'email', value: ev.target.value });
+  const changePassword = ev => authDispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: ev.target.value });
+  const changeUsername = ev => authDispatch({ type: UPDATE_FIELD_AUTH, key: 'username', value: email.target.value });
 
   const submitForm = (username, email, password) => async ev => {
     ev.preventDefault();
     const payload = await agent.Auth.register(username, email, password);
-    appDispatch({ type: REGISTER, payload })
+    authDispatch({ type: REGISTER })
+    commonDispatch({ type: REGISTER, payload })
   };
-
-  useEffect(() => {
-    return () => appDispatch({ type: REGISTER_PAGE_UNLOADED });
-  }, []);
 
   return (
     <div className="auth-page">
@@ -90,7 +87,7 @@ function Register({ errors }) {
       </div>
     </div>
   );
-}
+};
 
 
 export default Register;

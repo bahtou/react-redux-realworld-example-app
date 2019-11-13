@@ -1,15 +1,15 @@
 import React from 'react';
+
 import agent from '../agent';
+
 import { SET_PAGE } from '../constants/actionTypes';
-import { useAppDispatch  } from '../context';
+import { useArticleListDispatch } from '../context/articleList';
 
 
 const ListPagination = ({ pager, articlesCount, currentPage }) => {
-  const appDispatch = useAppDispatch();
+  const articleListDispatch = useArticleListDispatch();
 
-  if (articlesCount <= 10) {
-    return null;
-  }
+  if (articlesCount <= 10) return null;
 
   const range = [];
   for (let i = 0; i < Math.ceil(articlesCount / 10); ++i) {
@@ -18,18 +18,16 @@ const ListPagination = ({ pager, articlesCount, currentPage }) => {
 
   const setPage = async page => {
     if (pager) {
-      appDispatch({ type: SET_PAGE, page, payload: await pager(page) })
+      articleListDispatch({ type: SET_PAGE, page, payload: await pager(page) })
     } else {
-      appDispatch({ type: SET_PAGE, page, payload: await agent.Articles.all(page) })
+      articleListDispatch({ type: SET_PAGE, page, payload: await agent.Articles.all(page) })
     }
   };
 
   return (
     <nav>
       <ul className="pagination">
-
-        {
-          range.map(v => {
+        {range.map(v => {
             const isCurrent = v === currentPage;
             const onClick = ev => {
               ev.preventDefault();
@@ -47,7 +45,6 @@ const ListPagination = ({ pager, articlesCount, currentPage }) => {
             );
           })
         }
-
       </ul>
     </nav>
   );

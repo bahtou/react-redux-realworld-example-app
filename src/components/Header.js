@@ -72,24 +72,24 @@ const LoggedInView = ({ currentUser })=> {
   return null;
 };
 
-function Header() {
-  const common = useCommonState();
+const Header = () => {
+  const { appName, currentUser } = useCommonState();
 
   return (
     <nav className="navbar navbar-light">
       <div className="container">
 
         <Link to="/" className="navbar-brand">
-          {common.appName.toLowerCase()}
+          {appName.toLowerCase()}
         </Link>
 
-        <LoggedOutView currentUser={common.currentUser} />
+        <LoggedOutView currentUser={currentUser} />
 
-        <LoggedInView currentUser={common.currentUser} />
+        <LoggedInView currentUser={currentUser} />
       </div>
     </nav>
   );
-}
+};
 
 
 export default Header;

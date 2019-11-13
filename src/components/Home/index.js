@@ -1,28 +1,25 @@
 import React, { useEffect } from 'react';
+
+import agent from '../../agent';
+
+import { HOME_PAGE_LOADED, APPLY_TAG_FILTER } from '../../constants/actionTypes';
+import { useAppDispatch  } from '../../context';
+import { useCommonState } from '../../context/common';
+import { useArticleListDispatch } from '../../context/articleList';
+import { useFetch } from '../../hooks';
+
 import Banner from './Banner';
 import MainView from './MainView';
 import Tags from './Tags';
-import agent from '../../agent';
-import {
-  HOME_PAGE_LOADED,
-  HOME_PAGE_UNLOADED,
-  APPLY_TAG_FILTER
-} from '../../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../../context';
-import { useCommonState, useCommonDispatch  } from '../../context/common';
-import { useFetch } from '../../hooks';
 
 
-function Home() {
-  const appState = useAppState();
+const Home = () => {
   const appDispatch = useAppDispatch();
-  const { home } = appState;
+  const { appName, token } = useCommonState();
+  const articleListDispatch = useArticleListDispatch();
 
-  const common = useCommonState();
-  const commonDispatch = useCommonDispatch();
-
-  const tab = common.token ? 'feed' : 'all';
-  const articlesPromise = common.token
+  const tab = token ? 'feed' : 'all';
+  const articlesPromise = token
     ? agent.Articles.feed
     : agent.Articles.all;
   const { response, error, isLoading } = useFetch(agent.Tags.getAll(), articlesPromise());
@@ -30,7 +27,8 @@ function Home() {
   useEffect(() => {
     if (!response) return;
 
-    appDispatch({
+    appDispatch({ type: HOME_PAGE_LOADED, payload: { tags: response[0].tags } });
+    articleListDispatch({
       type: HOME_PAGE_LOADED,
       payload: {
         tab,
@@ -41,23 +39,17 @@ function Home() {
         currentPage: 0
       }
     });
-
-    return () => {
-      // which to dispatch first? top-bottom, bottom-top?
-      appDispatch({  type: HOME_PAGE_UNLOADED });
-      commonDispatch({ type: HOME_PAGE_UNLOADED });
-    };
   }, [response]);
 
   const onClickTag = (tag, pager, payload) => {
-    appDispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
+    articleListDispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
   };
 
   return (
     <div className="home-page">
-      {common.token
+      {token
         ? null
-        : <Banner appName={common.appName} />
+        : <Banner appName={appName} />
       }
 
       <div className="container page">
@@ -69,9 +61,7 @@ function Home() {
 
               <p>Popular Tags</p>
 
-              <Tags
-                tags={home.tags}
-                onClickTag={onClickTag} />
+              <Tags onClickTag={onClickTag} />
 
             </div>
           </div>
@@ -80,6 +70,7 @@ function Home() {
 
     </div>
   );
-}
+};
+
 
 export default Home;

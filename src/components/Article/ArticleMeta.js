@@ -1,6 +1,7 @@
-import ArticleActions from './ArticleActions';
-import { Link } from 'react-router-dom';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import ArticleActions from './ArticleActions';
+
 
 const ArticleMeta = ({ article, canModify }) => {
   return (
@@ -22,5 +23,6 @@ const ArticleMeta = ({ article, canModify }) => {
     </div>
   );
 };
+
 
 export default ArticleMeta;

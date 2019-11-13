@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
+
 import agent from '../../agent';
 import { ADD_COMMENT } from '../../constants/actionTypes';
-import { useAppDispatch  } from '../../context';
+import { useArticleDispatch } from '../../context/article';
 
 
-function CommentInput({ currentUser, slug }) {
+const CommentInput = ({ currentUser, slug }) => {
   const [body, setBody] = useState('');
-  const appDispatch = useAppDispatch();
+  const articleDispatch = useArticleDispatch();
 
   const createComment = async ev => {
     ev.preventDefault();
     const payload = await agent.Comments.create(slug, { body: body });
     setBody('');
-    appDispatch({ type: ADD_COMMENT, payload });
+    articleDispatch({ type: ADD_COMMENT, payload });
   };
 
   return (
@@ -38,7 +39,7 @@ function CommentInput({ currentUser, slug }) {
       </div>
     </form>
   );
-}
+};
 
 
 export default CommentInput;

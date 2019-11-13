@@ -1,40 +1,40 @@
 import React, { useEffect } from 'react';
+import { withRouter } from 'react-router';
+import marked from 'marked';
+
+import agent from '../../agent';
+
+import { ARTICLE_PAGE_LOADED } from '../../constants/actionTypes';
+import { useArticleState, useArticleDispatch  } from '../../context/article';
+import { useCommonState, useCommonDispatch } from '../../context/common';
+import { useFetch } from '../../hooks';
 
 import ArticleMeta from './ArticleMeta';
 import CommentContainer from './CommentContainer';
-import agent from '../../agent';
-import marked from 'marked';
-import { ARTICLE_PAGE_LOADED, ARTICLE_PAGE_UNLOADED } from '../../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../../context';
 
 
-function Article({ match }) {
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
-  const { article, common } = appState;
+const Article = ({ match }) => {
+  const { response, errors, isLoading } = useFetch(
+    agent.Articles.get(match.params.id),
+    agent.Comments.forArticle(match.params.id)
+  );
+  const article = useArticleState();
+  const articleDispatch = useArticleDispatch();
+  const { currentUser } = useCommonState();
+  const commonDispatch = useCommonDispatch();
+
   const { comments, commentErrors } = article;
 
   useEffect(() => {
-    const main = async () => {
-      const payload = await Promise.all([
-        agent.Articles.get(match.params.id),
-        agent.Comments.forArticle(match.params.id)
-      ]);
+    if (!response) return;
 
-      appDispatch({ type: ARTICLE_PAGE_LOADED, payload });
-    };
+    articleDispatch({ type: ARTICLE_PAGE_LOADED, payload: response });
+  }, [response]);
 
-    main();
-    return () => appDispatch({ type: ARTICLE_PAGE_UNLOADED });
-  }, []);
-
-
-  if (!article.article) {
-    return null;
-  }
+  if (!article.article) return null;
 
   const markup = { __html: marked(article.article.body, { sanitize: true }) };
-  const canModify = common.currentUser && common.currentUser.username === article.article.author.username;
+  const canModify = currentUser && currentUser.username === article.article.author.username;
   return (
     <div className="article-page">
 
@@ -57,8 +57,7 @@ function Article({ match }) {
             <div dangerouslySetInnerHTML={markup}></div>
 
             <ul className="tag-list">
-              {
-                article.article.tagList.map(tag => {
+              {article.article.tagList.map(tag => {
                   return (
                     <li
                       className="tag-default tag-pill tag-outline"
@@ -83,12 +82,12 @@ function Article({ match }) {
             comments={comments || []}
             errors={commentErrors}
             slug={match.params.id}
-            currentUser={common.currentUser} />
+            currentUser={currentUser} />
         </div>
       </div>
     </div>
   );
-}
+};
 
 
-export default Article;
+export default withRouter(Article);

@@ -1,26 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+
 import agent from '../agent';
+
 import { ARTICLE_FAVORITED, ARTICLE_UNFAVORITED } from '../constants/actionTypes';
-import { useAppDispatch  } from '../context';
+import { useArticleListDispatch  } from '../context/articleList';
 
 
 const FAVORITED_CLASS = 'btn btn-sm btn-primary';
 const NOT_FAVORITED_CLASS = 'btn btn-sm btn-outline-primary';
 
 const ArticlePreview = ({ article }) => {
-  const appDispatch = useAppDispatch();
+  const articleListDispatch = useArticleListDispatch();
 
   const favoriteButtonClass = article.favorited
     ? FAVORITED_CLASS
     : NOT_FAVORITED_CLASS;
 
-  const unfavorite = async slug => appDispatch({
+  const unfavorite = async slug => articleListDispatch({
     type: ARTICLE_UNFAVORITED,
     payload: await agent.Articles.unfavorite(slug)
   });
 
-  const favorite = async slug => appDispatch({
+  const favorite = async slug => articleListDispatch({
     type: ARTICLE_FAVORITED,
     payload: await agent.Articles.favorite(slug)
   });
@@ -62,8 +64,7 @@ const ArticlePreview = ({ article }) => {
         <p>{article.description}</p>
         <span>Read more...</span>
         <ul className="tag-list">
-          {
-            article.tagList.map(tag => {
+          {article.tagList.map(tag => {
               return (
                 <li className="tag-default tag-pill tag-outline" key={tag}>
                   {tag}

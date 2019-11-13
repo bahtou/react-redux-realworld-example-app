@@ -20,8 +20,7 @@ const ArticleList = ({ pager, articles, articlesCount, currentPage }) => {
 
   return (
     <div>
-      {
-        articles.map(article => {
+      {articles.map(article => {
           return (
             <ArticlePreview article={article} key={article.slug} />
           );
@@ -35,5 +34,6 @@ const ArticleList = ({ pager, articles, articlesCount, currentPage }) => {
     </div>
   );
 };
+
 
 export default ArticleList;

@@ -1,15 +1,16 @@
 import React from 'react';
+
 import agent from '../../agent';
 import { DELETE_COMMENT } from '../../constants/actionTypes';
-import { useAppDispatch  } from '../../context';
+import { useArticleDispatch  } from '../../context/article';
 
 
 const DeleteButton = ({ show, slug, commentId }) => {
-  const appDispatch = useAppDispatch();
+  const articleDispatch = useArticleDispatch();
 
   const del = async () => {
     const payload = await agent.Comments.delete(slug, commentId);
-    appDispatch({ type: DELETE_COMMENT, payload, commentId })
+    articleDispatch({ type: DELETE_COMMENT, payload, commentId })
   };
 
   if (show) {

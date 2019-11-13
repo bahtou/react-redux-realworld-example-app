@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import ArticleList from './ArticleList';
 import agent from '../agent';
 import {
   FOLLOW_USER,
   UNFOLLOW_USER,
-  PROFILE_PAGE_LOADED,
-  PROFILE_PAGE_UNLOADED
+  PROFILE_PAGE_LOADED
 } from '../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../context';
+import { useCommonState } from '../context/common';
+import { useProfileState, useProfileDispatch } from '../context/profile';
+import { useArticleListState, useArticleListDispatch } from '../context/articleList';
 import { useFetch } from '../hooks';
 
 
@@ -29,11 +31,9 @@ const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
   if (isUser) return null;
 
   let classes = 'btn btn-sm action-btn';
-  if (user.following) {
-    classes += ' btn-secondary';
-  } else {
-    classes += ' btn-outline-secondary';
-  }
+  classes = user.following
+    ? classes += ' btn-secondary'
+    : classes += ' btn-outline-secondary';
 
   const handleClick = ev => {
     ev.preventDefault();
@@ -59,30 +59,31 @@ function ProfileFavorites({ match }) {
   const { response, error, isLoading } = useFetch(
     agent.Profile.get(match.params.username),
     agent.Articles.favoritedBy(match.params.username));
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
 
-  const { common, articleList, profile } = appState;
-  const { currentUser } = common;
+  const articleList = useArticleListState();
+  const articleListDispatch = useArticleListDispatch();
+  const { currentUser } = useCommonState();
+  const profile = useProfileState();
+  const profileDispatch = useProfileDispatch();
+
   const { pager, articles, articlesCount, currentPage } = articleList;
 
   useEffect(() => {
     if (!response) return;
 
-    appDispatch({
+    profileDispatch({ type: PROFILE_PAGE_LOADED, payload: response[0] });
+    articleListDispatch({
       type: PROFILE_PAGE_LOADED,
       pager: async page => await agent.Articles.favoritedBy(match.params.username, page),
-      payload: response
+      payload: response[1]
     });
-
-    return () => appDispatch({ type: PROFILE_PAGE_UNLOADED });
   }, [response]);
 
-  const onFollow = async username => appDispatch({
+  const onFollow = async username => profileDispatch({
     type: FOLLOW_USER,
     payload: await agent.Profile.follow(username)
   });
-  const onUnfollow = async username => appDispatch({
+  const onUnfollow = async username => profileDispatch({
     type: UNFOLLOW_USER,
     payload: await agent.Profile.unfollow(username)
   });
@@ -163,4 +164,4 @@ function ProfileFavorites({ match }) {
 }
 
 
-export default ProfileFavorites;
+export default withRouter(ProfileFavorites);

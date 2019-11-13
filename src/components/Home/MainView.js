@@ -1,9 +1,12 @@
 import React from 'react';
-import ArticleList from '../ArticleList';
 import agent from '../../agent';
+
 import { CHANGE_TAB } from '../../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../../context';
 import { useCommonState } from '../../context/common';
+import { useArticleListState, useArticleListDispatch } from '../../context/articleList';
+
+import ArticleList from '../ArticleList';
+
 
 const YourFeedTab = ({ token, tab, onTabClick }) => {
   if (token) {
@@ -44,9 +47,7 @@ const GlobalFeedTab = ({ onTabClick, tab }) => {
 };
 
 const TagFilterTab = ({ tag }) => {
-  if (!tag) {
-    return null;
-  }
+  if (!tag) return null;
 
   return (
     <li className="nav-item">
@@ -58,15 +59,14 @@ const TagFilterTab = ({ tag }) => {
 };
 
 const MainView = ({ loading }) => {
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
-  const { articleList } = appState;
+  const articleList = useArticleListState();
+  const articleListDispatch = useArticleListDispatch();
+  const { token } = useCommonState();
+
   const { articles, articlesCount, currentPage, pager, tab, tag } = articleList;
 
-  const common = useCommonState();
-
   const onTabClick = (tab, pager, payload) => {
-    appDispatch({
+    articleListDispatch({
       type: CHANGE_TAB,
       tab,
       pager,
@@ -80,7 +80,7 @@ const MainView = ({ loading }) => {
         <ul className="nav nav-pills outline-active">
 
           <YourFeedTab
-            token={common.token}
+            token={token}
             tab={tab}
             onTabClick={onTabClick} />
 

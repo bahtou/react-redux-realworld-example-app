@@ -1,16 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+
 import agent from '../../agent';
 import { DELETE_ARTICLE } from '../../constants/actionTypes';
-import { useAppDispatch  } from '../../context';
+import { useCommonDispatch  } from '../../context/common';
 
 
 const ArticleActions = ({ canModify, article }) => {
-  const appDispatch = useAppDispatch();
+  const history = useHistory();
+  const commonDispatch = useCommonDispatch();
 
-  const del = async () => {
-   const payload = await agent.Articles.del(article.slug);
-   appDispatch({ type: DELETE_ARTICLE, payload })
+  const del = () => {
+   commonDispatch({ type: DELETE_ARTICLE, payload: agent.Articles.del(article.slug) });
+   history.push('/');
   };
 
   if (canModify) {

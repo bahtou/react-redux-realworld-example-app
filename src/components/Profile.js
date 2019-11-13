@@ -1,43 +1,41 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-import ArticleList from './ArticleList';
 import agent from '../agent';
+
 import {
   FOLLOW_USER,
   UNFOLLOW_USER,
-  PROFILE_PAGE_LOADED,
-  PROFILE_PAGE_UNLOADED
+  PROFILE_PAGE_LOADED
 } from '../constants/actionTypes';
-import { useAppState, useAppDispatch  } from '../context';
+import { useCommonState } from '../context/common';
+import { useProfileState, useProfileDispatch } from '../context/profile';
+import { useArticleListState, useArticleListDispatch } from '../context/articleList';
 import { useFetch } from '../hooks';
+
+import ArticleList from './ArticleList';
 
 
 const EditProfileSettings = ({ isUser }) => {
-  if (isUser) {
-    return (
-      <Link
-        to="/settings"
-        className="btn btn-sm btn-outline-secondary action-btn">
-        <i className="ion-gear-a"></i> Edit Profile Settings
-      </Link>
-    );
-  }
+  if (!isUser) return null;
 
-  return null;
+  return (
+    <Link
+      to="/settings"
+      className="btn btn-sm btn-outline-secondary action-btn">
+      <i className="ion-gear-a"></i> Edit Profile Settings
+    </Link>
+  );
 };
 
 const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
-  if (isUser) {
-    return null;
-  }
+  if (isUser) return null;
 
   let classes = 'btn btn-sm action-btn';
-  if (user.following) {
-    classes += ' btn-secondary';
-  } else {
-    classes += ' btn-outline-secondary';
-  }
+  classes = user.following
+    ? classes += ' btn-secondary'
+    : classes += ' btn-outline-secondary';
 
   const handleClick = ev => {
     ev.preventDefault();
@@ -59,29 +57,32 @@ const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
   );
 };
 
-function Profile({ match }) {
+const Profile = ({ match }) => {
   const { response, error, isLoading } = useFetch(
     agent.Profile.get(match.params.username),
-    agent.Articles.byAuthor(match.params.username));
-  const appState = useAppState();
-  const appDispatch = useAppDispatch();
+    agent.Articles.byAuthor(match.params.username)
+  );
 
-  const { common, articleList, profile } = appState;
-  const { currentUser } = common;
+  const articleList = useArticleListState();
+  const articleListDispatch = useArticleListDispatch();
+  const { currentUser } = useCommonState();
+  const profile = useProfileState();
+  const profileDispatch = useProfileDispatch();
+
   const { pager, articles, articlesCount, currentPage } = articleList;
 
   useEffect(() => {
     if (!response) return;
-    appDispatch({ type: PROFILE_PAGE_LOADED, payload: response });
 
-    return () => appDispatch({ type: PROFILE_PAGE_UNLOADED });
+    profileDispatch({ type: PROFILE_PAGE_LOADED, payload: response[0] });
+    articleListDispatch({ type: PROFILE_PAGE_LOADED, payload: response[1] });
   }, [response]);
 
-  const onFollow = async username => appDispatch({
+  const onFollow = async username => profileDispatch({
     type: FOLLOW_USER,
     payload: await agent.Profile.follow(username)
   });
-  const onUnfollow = async username => appDispatch({
+  const onUnfollow = async username => profileDispatch({
     type: UNFOLLOW_USER,
     payload: await agent.Profile.unfollow(username)
   });
@@ -108,9 +109,7 @@ function Profile({ match }) {
     );
   };
 
-  if (!profile) {
-    return null;
-  }
+  if (!profile) return null;
 
   const isUser = currentUser &&
     profile.username === currentUser.username;
@@ -161,7 +160,7 @@ function Profile({ match }) {
 
     </div>
   );
-}
+};
 
 
-export default Profile;
+export default withRouter(Profile);
