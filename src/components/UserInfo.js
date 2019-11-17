@@ -1,11 +1,10 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import agent from '../agent';
 
 import { FOLLOW_USER, UNFOLLOW_USER } from '../constants/actionTypes';
-import { useProfileState, useProfileDispatch } from '../context/profile';
-import { useCommonState } from '../context/common';
 
 
 const EditProfileSettings = ({ isUser }) => {
@@ -49,17 +48,17 @@ const FollowUserButton = ({ follow, unfollow, user, isUser }) => {
 }
 
 const UserInfo = () => {
-  const profile = useProfileState();
-  const profileDispatch = useProfileDispatch();
-  const { currentUser } = useCommonState();
+  const dispatch = useDispatch();
+  const { shared, profile } = useSelector(state => state);
+  const { currentUser } = shared;
 
-  const onFollow = async username => profileDispatch({
+  const onFollow = async username => dispatch({
     type: FOLLOW_USER,
-    payload: await agent.Profile.follow(username)
+    payload: await agent.Profiles.follow(username)
   });
-  const onUnfollow = async username => profileDispatch({
+  const onUnfollow = async username => dispatch({
     type: UNFOLLOW_USER,
-    payload: await agent.Profile.unfollow(username)
+    payload: await agent.Profiles.unfollow(username)
   });
 
   const isUser = currentUser &&

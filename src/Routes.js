@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
 import agent from './agent';
 
 import { APP_LOAD } from './constants/actionTypes';
-import { useCommonState, useCommonDispatch  } from './context/common';
-import { ProfileProvider } from './context/profile';
 import { ArticleProvider } from './context/article';
 import { EditorProvider } from './context/editor';
-import { ArticleListProvider } from './context/articleList';
 import { UserProvider } from './context/user';
 import { useLocalStorage } from './hooks';
 
@@ -24,8 +22,8 @@ import Settings from './pages/Settings';
 
 const Routes = () => {
   const [token] = useLocalStorage('jwt');
-  const { appLoaded } = useCommonState();
-  const commonDispatch = useCommonDispatch();
+  const dispatch = useDispatch();
+  const { appLoaded } = useSelector(state => state.shared);
 
   useEffect(() => {
     async function main() {
@@ -36,7 +34,7 @@ const Routes = () => {
         result = await agent.Users.current();
       }
 
-      commonDispatch({
+      dispatch({
         type: APP_LOAD,
         token,
         payload: {
@@ -54,11 +52,7 @@ const Routes = () => {
     <div>
       <Header />
       <Switch>
-        <Route exact path="/">
-          <ArticleListProvider>
-            <Home />
-          </ArticleListProvider>
-        </Route>
+        <Route exact path="/" component={Home} />
 
         <Route path="/login">
           <UserProvider>
@@ -90,25 +84,11 @@ const Routes = () => {
           </ArticleProvider>
         </Route>
 
-        <Route path="/settings">
-          <Settings />
-        </Route>
+        <Route path="/settings" component={Settings} />
 
-        <Route path="/@:username/favorites">
-          <ProfileProvider>
-            <ArticleListProvider>
-              <Profile />
-            </ArticleListProvider>
-          </ProfileProvider>
-        </Route>
+        <Route path="/@:username/favorites" component={Profile} />
 
-        <Route path="/@:username">
-          <ProfileProvider>
-            <ArticleListProvider>
-              <Profile />
-            </ArticleListProvider>
-          </ProfileProvider>
-        </Route>
+        <Route path="/@:username" component={Profile} />
       </Switch>
   </div>
   );

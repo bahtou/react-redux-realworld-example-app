@@ -1,13 +1,13 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 
 import agent from '../agent';
 
 import { SET_PAGE } from '../constants/actionTypes';
-import { useArticleListDispatch } from '../context/articleList';
 
 
 const ListPagination = ({ pager, articlesCount, currentPage }) => {
-  const articleListDispatch = useArticleListDispatch();
+  const dispatch = useDispatch();
 
   if (articlesCount <= 10) return null;
 
@@ -18,9 +18,9 @@ const ListPagination = ({ pager, articlesCount, currentPage }) => {
 
   const setPage = async page => {
     if (pager) {
-      articleListDispatch({ type: SET_PAGE, page, payload: await pager(page) })
+      dispatch({ type: SET_PAGE, page, payload: await pager(page) })
     } else {
-      articleListDispatch({ type: SET_PAGE, page, payload: await agent.Articles.all(page) })
+      dispatch({ type: SET_PAGE, page, payload: await agent.Articles.all(page) })
     }
   };
 

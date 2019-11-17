@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { useCommonState } from '../../context/common';
 import ArticleActions from './ArticleActions';
 
 
 const ArticleMeta = ({ article }) => {
-  const { currentUser } = useCommonState();
+  const { currentUser } = useSelector(state => state.shared);
   const canModify = currentUser && currentUser.username === article.author.username;
 
   return (

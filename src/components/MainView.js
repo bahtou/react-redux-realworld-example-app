@@ -1,9 +1,9 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import agent from '../agent';
 
 import { CHANGE_TAB } from '../constants/actionTypes';
-import { useCommonState } from '../context/common';
-import { useArticleListState, useArticleListDispatch } from '../context/articleList';
 
 import ArticleContainer from './articles';
 
@@ -59,14 +59,14 @@ const TagFilterTab = ({ tag }) => {
 };
 
 const MainView = ({ loading }) => {
-  const articleList = useArticleListState();
-  const articleListDispatch = useArticleListDispatch();
-  const { token } = useCommonState();
+  const dispatch = useDispatch();
+  const { shared, articleList } = useSelector(state => state);
+  const { token } = shared;
 
   const { articles, articlesCount, currentPage, pager, tab, tag } = articleList;
 
   const onTabClick = (tab, pager, payload) => {
-    articleListDispatch({
+    dispatch({
       type: CHANGE_TAB,
       tab,
       pager,

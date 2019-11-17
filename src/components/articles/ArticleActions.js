@@ -1,17 +1,17 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
 import agent from '../../agent';
 import { DELETE_ARTICLE } from '../../constants/actionTypes';
-import { useCommonDispatch  } from '../../context/common';
 
 
 const ArticleActions = ({ canModify, article }) => {
   const history = useHistory();
-  const commonDispatch = useCommonDispatch();
+  const dispatch = useDispatch();
 
   const del = () => {
-   commonDispatch({ type: DELETE_ARTICLE, payload: agent.Articles.del(article.slug) });
+    dispatch({ type: DELETE_ARTICLE, payload: agent.Articles.del(article.slug) });
    history.push('/');
   };
 

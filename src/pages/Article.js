@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import marked from 'marked';
 
@@ -6,7 +7,6 @@ import agent from '../agent';
 
 import { ARTICLE_PAGE_LOADED } from '../constants/actionTypes';
 import { useArticleState, useArticleDispatch  } from '../context/article';
-import { useCommonState } from '../context/common';
 import { useFetch } from '../hooks';
 
 import Banner from '../components/Banner';
@@ -21,7 +21,7 @@ const Article = () => {
   );
   const article = useArticleState();
   const articleDispatch = useArticleDispatch();
-  const { currentUser } = useCommonState();
+  const { currentUser } = useSelector(state => state.shared);
 
   const { comments, commentErrors } = article;
 

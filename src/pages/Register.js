@@ -1,11 +1,11 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import agent from '../agent';
 
 import { UPDATE_FIELD_USER, REGISTER } from '../constants/actionTypes';
 import { useUserState, useUserDispatch  } from '../context/user';
-import { useCommonDispatch  } from '../context/common';
 import ListErrors from '../components/ListErrors';
 import { UserLayoutComponent } from '../pages/_layouts';
 
@@ -13,7 +13,7 @@ import { UserLayoutComponent } from '../pages/_layouts';
 const Register = ({ errors }) => {
   const user = useUserState();
   const userDispatch = useUserDispatch();
-  const commonDispatch = useCommonDispatch();
+  const dispatch = useDispatch();
 
   const { email, password, username,inProgress } = user;
 
@@ -25,7 +25,7 @@ const Register = ({ errors }) => {
     ev.preventDefault();
     const payload = await agent.Users.register(username, email, password);
     userDispatch({ type: REGISTER })
-    commonDispatch({ type: REGISTER, payload })
+    dispatch({ type: REGISTER, payload })
   };
 
   return (

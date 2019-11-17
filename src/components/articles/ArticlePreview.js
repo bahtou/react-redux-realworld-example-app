@@ -1,28 +1,28 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import agent from '../../agent';
 
 import { ARTICLE_FAVORITED, ARTICLE_UNFAVORITED } from '../../constants/actionTypes';
-import { useArticleListDispatch  } from '../../context/articleList';
 
 
 const FAVORITED_CLASS = 'btn btn-sm btn-primary';
 const NOT_FAVORITED_CLASS = 'btn btn-sm btn-outline-primary';
 
 const ArticlePreview = ({ article }) => {
-  const articleListDispatch = useArticleListDispatch();
+  const dispatch = useDispatch();
 
   const favoriteButtonClass = article.favorited
     ? FAVORITED_CLASS
     : NOT_FAVORITED_CLASS;
 
-  const unfavorite = async slug => articleListDispatch({
+  const unfavorite = async slug => dispatch({
     type: ARTICLE_UNFAVORITED,
     payload: await agent.Articles.unfavorite(slug)
   });
 
-  const favorite = async slug => articleListDispatch({
+  const favorite = async slug => dispatch({
     type: ARTICLE_FAVORITED,
     payload: await agent.Articles.favorite(slug)
   });

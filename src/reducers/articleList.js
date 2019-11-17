@@ -1,4 +1,3 @@
-import React, { createContext, useContext, useReducer } from 'react';
 import {
   ARTICLE_FAVORITED,
   ARTICLE_UNFAVORITED,
@@ -13,9 +12,6 @@ import {
 } from '../constants/actionTypes';
 
 
-const ArticleListStateContext = createContext();
-const ArticleListDispatchContext = createContext();
-
 const initialState = {
   tags: [],
   articles: [],
@@ -26,7 +22,7 @@ const initialState = {
   pager: null
 };
 
-const reducer = (state, action) => {
+const reducer = (state=initialState, action) => {
   switch (action.type) {
     case ARTICLE_FAVORITED:
     case ARTICLE_UNFAVORITED:
@@ -88,7 +84,6 @@ const reducer = (state, action) => {
     case PROFILE_PAGE_LOADED:
       return {
         ...state,
-        pager: action.pager,
         articles: action.payload.articles,
         articlesCount: action.payload.articlesCount,
         currentPage: 0
@@ -110,29 +105,5 @@ const reducer = (state, action) => {
   }
 };
 
-function ArticleListProvider({children}) {
-  const [state, dispatch] = useReducer(reducer, initialState);
 
-  return (
-    <ArticleListStateContext.Provider value={state}>
-      <ArticleListDispatchContext.Provider value={dispatch}>
-        {children}
-      </ArticleListDispatchContext.Provider>
-    </ArticleListStateContext.Provider>
-  );
-}
-
-function useArticleListState() {
-  return useContext(ArticleListStateContext);
-}
-
-function useArticleListDispatch() {
-  return useContext(ArticleListDispatchContext);
-}
-
-
-export {
-  ArticleListProvider,
-  useArticleListState,
-  useArticleListDispatch
-};
+export default reducer;

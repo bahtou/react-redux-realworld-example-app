@@ -1,11 +1,11 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import agent from '../agent';
 
 import { LOGOUT } from '../constants/actionTypes';
 import { useLocalStorage } from '../hooks';
-import { useCommonDispatch  } from '../context/common';
 import { SettingsLayoutComponent } from './_layouts';
 import SettingsForm from '../components/SettingsForm';
 import ListErrors from '../components/ListErrors';
@@ -14,10 +14,10 @@ import ListErrors from '../components/ListErrors';
 const Settings = ({ errors }) => {
   const [, setJwtToken] = useLocalStorage('jwt');
   const history = useHistory();
-  const commonDispatch = useCommonDispatch();
+  const dispatch = useDispatch();
 
   const onClickLogout = () => {
-    commonDispatch({ type: LOGOUT });
+    dispatch({ type: LOGOUT });
 
     setJwtToken('');
     agent.setToken(null);

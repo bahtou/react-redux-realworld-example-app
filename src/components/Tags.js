@@ -1,19 +1,17 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import agent from '../agent';
 
 import { APPLY_TAG_FILTER } from '../constants/actionTypes';
-import { useAppState  } from '../context';
-import { useArticleListDispatch } from '../context/articleList';
 
 
 const Tags = () => {
-  const appState = useAppState();
-  const articleListDispatch = useArticleListDispatch();
-  const { home:{ tags }} = appState;
+  const dispatch = useDispatch();
+  const { tags } = useSelector(state => state.tagList);
 
   const onClickTag = (tag, pager, payload) => {
-    articleListDispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
+    dispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
   };
 
   if (tags.length === 0)

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useReducer } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import agent from '../agent';
 import { SETTINGS_SAVED } from '../constants/actionTypes';
-import { useCommonState, useCommonDispatch  } from '../context/common';
 
 
 const initialState = {
@@ -36,8 +36,8 @@ function reducer(state, action) {
 
 const SettingsForm = () => {
   const history = useHistory();
-  const { currentUser } = useCommonState();
-  const commonDispatch = useCommonDispatch();
+  const _dispatch = useDispatch();
+  const { currentUser } = useSelector(state => state.shared);
   const [user, dispatch] = useReducer(reducer, initialState);
   const { bio, image, username, email, password } = user;
 
@@ -54,7 +54,7 @@ const SettingsForm = () => {
       _user = { bio, image, username, email };
     }
 
-    commonDispatch({ type: SETTINGS_SAVED, payload: await agent.Users.save(_user) });
+    _dispatch({ type: SETTINGS_SAVED, payload: await agent.Users.save(_user) });
     history.push('/');
   };
 

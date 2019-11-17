@@ -1,6 +1,6 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useCommonState } from '../context/common';
 
 
 const LoggedOutView = ({ currentUser }) => {
@@ -73,7 +73,7 @@ const LoggedInView = ({ currentUser })=> {
 };
 
 const Header = () => {
-  const { appName, currentUser } = useCommonState();
+  const { appName, currentUser } = useSelector(state => state.shared);
 
   return (
     <nav className="navbar navbar-light">

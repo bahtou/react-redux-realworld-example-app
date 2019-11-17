@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import agent from '../agent';
 
 import { HOME_PAGE_LOADED } from '../constants/actionTypes';
-import { useAppDispatch } from '../context';
-import { useCommonState } from '../context/common';
-import { useArticleListDispatch } from '../context/articleList';
 import { useFetch } from '../hooks';
 
 import { HomeLayoutComponent } from '../pages/_layouts';
@@ -15,9 +13,8 @@ import SideBar from '../components/SideBar';
 
 
 const Home = () => {
-  const appDispatch = useAppDispatch();
-  const articleListDispatch = useArticleListDispatch();
-  const { appName, token } = useCommonState();
+  const dispatch = useDispatch();
+  const { appName, token } = useSelector(state => state.shared);
 
   const tab = token ? 'feed' : 'all';
   const articlesPromise = token
@@ -28,8 +25,7 @@ const Home = () => {
   useEffect(() => {
     if (!response) return;
 
-    appDispatch({ type: HOME_PAGE_LOADED, payload: { tags: response[0].tags } });
-    articleListDispatch({
+    dispatch({
       type: HOME_PAGE_LOADED,
       payload: {
         tab,

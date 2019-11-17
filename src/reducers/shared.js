@@ -1,4 +1,3 @@
-import React, { createContext, useContext, useReducer } from 'react';
 import {
   APP_LOAD,
   REDIRECT,
@@ -21,9 +20,6 @@ import {
 } from '../constants/actionTypes';
 
 
-const CommonStateContext = createContext();
-const CommonDispatchContext = createContext();
-
 const initialState = {
   appLoaded: false,
   appName: 'Conduit',
@@ -33,7 +29,7 @@ const initialState = {
   viewChangeCounter: 0
 };
 
-const reducer = (state, action) => {
+const reducer = (state=initialState, action) => {
   switch (action.type) {
     case APP_LOAD:
       return {
@@ -65,6 +61,11 @@ const reducer = (state, action) => {
         ...state,
         redirectTo: action.error ? null : '/',
         currentUser: action.error ? null : action.payload.user
+        // settings: {
+        //   ...state.settings,
+        //   inProgress: false,
+        //   errors: action.error ? action.payload.errors : null
+        // }
       };
     case LOGIN:
     case REGISTER:
@@ -96,29 +97,38 @@ const reducer = (state, action) => {
   }
 };
 
-function CommonProvider({children}) {
-  const [state, dispatch] = useReducer(reducer, initialState);
 
-  return (
-    <CommonStateContext.Provider value={state}>
-      <CommonDispatchContext.Provider value={dispatch}>
-        {children}
-      </CommonDispatchContext.Provider>
-    </CommonStateContext.Provider>
-  );
-}
-
-function useCommonState() {
-  return useContext(CommonStateContext);
-}
-
-function useCommonDispatch() {
-  return useContext(CommonDispatchContext);
-}
+export default reducer;
 
 
-export {
-  CommonProvider,
-  useCommonState,
-  useCommonDispatch
-};
+// case ASYNC_START:
+//   console.log('REDUCER:auth', action.type);
+//   let inProgressStates = {};
+//   if (action.subtype === LOGIN || action.subtype === REGISTER) {
+//     inProgressStates = {
+//       auth: {
+//         ...state.auth,
+//         inProgress: true
+//       }
+//     };
+//   }
+
+//   console.log('REDUCER:editor', action.type);
+//   if (action.subtype === ARTICLE_SUBMITTED) {
+//     inProgressStates = {
+//       editor: {
+//         ...state.editor,
+//         inProgress: true
+//       }
+//     };
+//   }
+
+//   console.log('REDUCER:settings', action.type);
+//   return {
+//     ...state,
+//     ...inProgressStates,
+//     settings: {
+//       ...state.settings,
+//       inProgress: true
+//     }
+//   };

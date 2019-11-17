@@ -1,18 +1,16 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import { Provider } from 'react-redux';
 import { BrowserRouter } from "react-router-dom";
 
-import { AppProvider } from './context';
-import { CommonProvider } from './context/common';
+import store from './store';
 import Routes from './Routes';
 
 
 ReactDOM.render((
-  <BrowserRouter>
-    <CommonProvider>
-      <AppProvider>
-        <Routes/>
-      </AppProvider>
-    </CommonProvider>
-  </BrowserRouter>
+  <Provider store={store}>
+    <BrowserRouter>
+      <Routes/>
+    </BrowserRouter>
+  </Provider>
 ), document.getElementById('root'));

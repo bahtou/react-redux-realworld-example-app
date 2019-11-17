@@ -1,15 +1,13 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { useProfileState } from '../context/profile';
-import { useArticleListState } from '../context/articleList';
 import ArticleContainer from './articles';
 
 
 const Favorites = () => {
   const { path } = useRouteMatch();
-  const articleList = useArticleListState();
-  const profile = useProfileState();
+  const { articleList, profile } = useSelector(state => state);
   const { pager, articles, articlesCount, currentPage } = articleList;
   let isFavoritesActive = false;
 

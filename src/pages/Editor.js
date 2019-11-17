@@ -1,4 +1,5 @@
 import React, { useEffect }  from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { withRouter } from 'react-router';
 
@@ -11,7 +12,6 @@ import {
   ARTICLE_SUBMITTED,
   UPDATE_FIELD_EDITOR
 } from '../constants/actionTypes';
-import { useCommonDispatch  } from '../context/common';
 import { useEditorState, useEditorDispatch } from '../context/editor';
 import ListErrors from '../components/ListErrors';
 import { EditorLayoutComponent } from './_layouts';
@@ -20,7 +20,7 @@ import { EditorLayoutComponent } from './_layouts';
 const Editor = ({ errors }) => {
   const history = useHistory();
   const { slug } = useParams();
-  const commonDispatch = useCommonDispatch();
+  const dispatch = useDispatch();
 
   const editor = useEditorState();
   const editorDispatch = useEditorDispatch()
@@ -52,7 +52,7 @@ const Editor = ({ errors }) => {
       await agent.Articles.create(article);
 
     editorDispatch({ type: ARTICLE_SUBMITTED, payload });
-    commonDispatch({ type: ARTICLE_SUBMITTED, payload });
+    dispatch({ type: ARTICLE_SUBMITTED, payload });
     history.push(`/article/${payload.article.slug}`);
   };
 

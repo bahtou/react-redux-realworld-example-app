@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useHistory } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { Link, useHistory  } from 'react-router-dom';
 
 import agent from '../agent';
 
@@ -8,7 +8,6 @@ import { UPDATE_FIELD_USER, LOGIN } from '../constants/actionTypes';
 
 import { useLocalStorage } from '../hooks';
 import { useUserState, useUserDispatch  } from '../context/user';
-import { useCommonDispatch  } from '../context/common';
 import ListErrors from '../components/ListErrors';
 import { UserLayoutComponent } from '../pages/_layouts';
 
@@ -17,7 +16,7 @@ function Login ({ errors }) {
   const [, setJwtToken] = useLocalStorage('jwt', '');
   const user = useUserState();
   const userDispatch = useUserDispatch();
-  const commonDispatch = useCommonDispatch();
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const { email, password, inProgress } = user;
@@ -34,7 +33,7 @@ function Login ({ errors }) {
       agent.setToken(user.token);
 
       userDispatch({ type: LOGIN });
-      commonDispatch({ type: LOGIN, payload: { user, token:  user.token } });
+      dispatch({ type: LOGIN, payload: { user, token:  user.token } });
 
       history.push('/');
       return;
