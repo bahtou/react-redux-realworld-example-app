@@ -1,11 +1,20 @@
 import React from 'react';
-import agent from '../../agent';
-import { useAppState  } from '../../context';
+
+import agent from '../agent';
+
+import { APPLY_TAG_FILTER } from '../constants/actionTypes';
+import { useAppState  } from '../context';
+import { useArticleListDispatch } from '../context/articleList';
 
 
-const Tags = ({ onClickTag }) => {
+const Tags = () => {
   const appState = useAppState();
+  const articleListDispatch = useArticleListDispatch();
   const { home:{ tags }} = appState;
+
+  const onClickTag = (tag, pager, payload) => {
+    articleListDispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
+  };
 
   if (tags.length === 0)
     return <div>Loading Tags...</div>;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import agent from '../agent';
+import agent from '../../agent';
 
-import { ARTICLE_FAVORITED, ARTICLE_UNFAVORITED } from '../constants/actionTypes';
-import { useArticleListDispatch  } from '../context/articleList';
+import { ARTICLE_FAVORITED, ARTICLE_UNFAVORITED } from '../../constants/actionTypes';
+import { useArticleListDispatch  } from '../../context/articleList';
 
 
 const FAVORITED_CLASS = 'btn btn-sm btn-primary';

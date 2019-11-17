@@ -4,12 +4,12 @@ import {
   REGISTER,
   LOGIN_PAGE_UNLOADED,
   REGISTER_PAGE_UNLOADED,
-  UPDATE_FIELD_AUTH,
+  UPDATE_FIELD_USER,
 } from '../constants/actionTypes';
 
 
-const AuthStateContext = createContext();
-const AuthDispatchContext = createContext();
+const UserStateContext = createContext();
+const UserDispatchContext = createContext();
 
 const initialState = {
   username: '',
@@ -32,7 +32,7 @@ const reducer = (state, action) => {
       return {
         ...initialState
       };
-    case UPDATE_FIELD_AUTH:
+    case UPDATE_FIELD_USER:
       return {
         ...state,
         [action.key]: action.value
@@ -42,29 +42,29 @@ const reducer = (state, action) => {
   }
 };
 
-function AuthProvider({children}) {
+function UserProvider({children}) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
-    <AuthStateContext.Provider value={state}>
-      <AuthDispatchContext.Provider value={dispatch}>
+    <UserStateContext.Provider value={state}>
+      <UserDispatchContext.Provider value={dispatch}>
         {children}
-      </AuthDispatchContext.Provider>
-    </AuthStateContext.Provider>
+      </UserDispatchContext.Provider>
+    </UserStateContext.Provider>
   );
 }
 
-function useAuthState() {
-  return useContext(AuthStateContext);
+function useUserState() {
+  return useContext(UserStateContext);
 }
 
-function useAuthDispatch() {
-  return useContext(AuthDispatchContext);
+function useUserDispatch() {
+  return useContext(UserDispatchContext);
 }
 
 
 export {
-  AuthProvider,
-  useAuthState,
-  useAuthDispatch
+  UserProvider,
+  useUserState,
+  useUserDispatch
 };

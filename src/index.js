@@ -4,14 +4,14 @@ import { BrowserRouter } from "react-router-dom";
 
 import { AppProvider } from './context';
 import { CommonProvider } from './context/common';
-import App from './components/App';
+import Routes from './Routes';
 
 
 ReactDOM.render((
   <BrowserRouter>
     <CommonProvider>
       <AppProvider>
-        <App />
+        <Routes/>
       </AppProvider>
     </CommonProvider>
   </BrowserRouter>

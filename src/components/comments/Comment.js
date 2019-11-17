@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import DeleteButton from './DeleteButton';
+import DeleteButton from '../DeleteButton';
 
 
 const Comment = ({ comment, currentUser, slug }) => {
@@ -12,6 +12,7 @@ const Comment = ({ comment, currentUser, slug }) => {
       <div className="card-block">
         <p className="card-text">{comment.body}</p>
       </div>
+
       <div className="card-footer">
         <Link
           to={`/@${comment.author.username}`}
@@ -27,6 +28,7 @@ const Comment = ({ comment, currentUser, slug }) => {
         <span className="date-posted">
           {new Date(comment.createdAt).toDateString()}
         </span>
+
         <DeleteButton show={show} slug={slug} commentId={comment.id} />
       </div>
     </div>

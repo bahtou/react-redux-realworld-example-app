@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import CommentInput from './CommentInput';
-import CommentList from './CommentList';
+import Comment from './Comment';
 
 
 const CommentContainer = ({ currentUser, slug, errors, comments }) => {
@@ -14,10 +14,15 @@ const CommentContainer = ({ currentUser, slug, errors, comments }) => {
           <CommentInput slug={slug} currentUser={currentUser} />
         </div>
 
-        <CommentList
-          comments={comments}
-          slug={slug}
-          currentUser={currentUser} />
+        {comments.map(comment => {
+          return (
+            <Comment
+              comment={comment}
+              currentUser={currentUser}
+              slug={slug}
+              key={comment.id} />
+          );
+        })}
       </div>
     );
   } else {
@@ -30,10 +35,15 @@ const CommentContainer = ({ currentUser, slug, errors, comments }) => {
           &nbsp;to add comments on this article.
         </p>
 
-        <CommentList
-          comments={comments}
-          slug={slug}
-          currentUser={currentUser} />
+        {comments.map(comment => {
+          return (
+            <Comment
+              comment={comment}
+              currentUser={currentUser}
+              slug={slug}
+              key={comment.id} />
+          );
+        })}
       </div>
     );
   }

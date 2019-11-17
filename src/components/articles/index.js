@@ -1,13 +1,11 @@
 import React from 'react';
 import ArticlePreview from './ArticlePreview';
-import ListPagination from './ListPagination';
+import ListPagination from '../ListPagination';
 
 
-const ArticleList = ({ pager, articles, articlesCount, currentPage }) => {
+const ArticleContainer = ({ pager, articles, articlesCount, currentPage }) => {
   if (!articles) {
-    return (
-      <div className="article-preview">Loading...</div>
-    );
+    return <div className="article-preview">Loading...</div>
   }
 
   if (articles.length === 0) {
@@ -36,4 +34,4 @@ const ArticleList = ({ pager, articles, articlesCount, currentPage }) => {
 };
 
 
-export default ArticleList;
+export default ArticleContainer;

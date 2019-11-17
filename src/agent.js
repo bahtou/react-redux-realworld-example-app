@@ -26,7 +26,7 @@ const requests = {
     superagent.post(`${API_ROOT}${url}`, body).use(tokenPlugin).then(responseBody)
 };
 
-const Auth = {
+const Users = {
   current: () =>
     requests.get('/user'),
   login: (email, password) =>
@@ -77,7 +77,7 @@ const Comments = {
     requests.get(`/articles/${slug}/comments`)
 };
 
-const Profile = {
+const Profiles = {
   follow: username =>
     requests.post(`/profiles/${username}/follow`),
   get: username =>
@@ -88,9 +88,9 @@ const Profile = {
 
 export default {
   Articles,
-  Auth,
+  Users,
   Comments,
-  Profile,
+  Profiles,
   Tags,
   setToken: _token => { token = _token; }
 };

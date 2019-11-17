@@ -1,11 +1,11 @@
 import React from 'react';
-import agent from '../../agent';
+import agent from '../agent';
 
-import { CHANGE_TAB } from '../../constants/actionTypes';
-import { useCommonState } from '../../context/common';
-import { useArticleListState, useArticleListDispatch } from '../../context/articleList';
+import { CHANGE_TAB } from '../constants/actionTypes';
+import { useCommonState } from '../context/common';
+import { useArticleListState, useArticleListDispatch } from '../context/articleList';
 
-import ArticleList from '../ArticleList';
+import ArticleContainer from './articles';
 
 
 const YourFeedTab = ({ token, tab, onTabClick }) => {
@@ -91,7 +91,7 @@ const MainView = ({ loading }) => {
         </ul>
       </div>
 
-      <ArticleList
+      <ArticleContainer
         pager={pager}
         articles={articles}
         loading={loading}

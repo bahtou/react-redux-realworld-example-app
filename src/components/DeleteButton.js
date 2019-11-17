@@ -1,8 +1,8 @@
 import React from 'react';
 
-import agent from '../../agent';
-import { DELETE_COMMENT } from '../../constants/actionTypes';
-import { useArticleDispatch  } from '../../context/article';
+import agent from '../agent';
+import { DELETE_COMMENT } from '../constants/actionTypes';
+import { useArticleDispatch  } from '../context/article';
 
 
 const DeleteButton = ({ show, slug, commentId }) => {

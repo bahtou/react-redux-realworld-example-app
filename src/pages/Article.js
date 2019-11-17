@@ -1,27 +1,27 @@
 import React, { useEffect } from 'react';
-import { withRouter } from 'react-router';
+import { useParams } from 'react-router';
 import marked from 'marked';
 
-import agent from '../../agent';
+import agent from '../agent';
 
-import { ARTICLE_PAGE_LOADED } from '../../constants/actionTypes';
-import { useArticleState, useArticleDispatch  } from '../../context/article';
-import { useCommonState, useCommonDispatch } from '../../context/common';
-import { useFetch } from '../../hooks';
+import { ARTICLE_PAGE_LOADED } from '../constants/actionTypes';
+import { useArticleState, useArticleDispatch  } from '../context/article';
+import { useCommonState } from '../context/common';
+import { useFetch } from '../hooks';
 
-import ArticleMeta from './ArticleMeta';
-import CommentContainer from './CommentContainer';
+import Banner from '../components/Banner';
+import CommentContainer from '../components/comments';
 
 
-const Article = ({ match }) => {
+const Article = () => {
+  const { id } = useParams();
   const { response, errors, isLoading } = useFetch(
-    agent.Articles.get(match.params.id),
-    agent.Comments.forArticle(match.params.id)
+    agent.Articles.get(id),
+    agent.Comments.forArticle(id)
   );
   const article = useArticleState();
   const articleDispatch = useArticleDispatch();
   const { currentUser } = useCommonState();
-  const commonDispatch = useCommonDispatch();
 
   const { comments, commentErrors } = article;
 
@@ -34,20 +34,10 @@ const Article = ({ match }) => {
   if (!article.article) return null;
 
   const markup = { __html: marked(article.article.body, { sanitize: true }) };
-  const canModify = currentUser && currentUser.username === article.article.author.username;
   return (
     <div className="article-page">
 
-      <div className="banner">
-        <div className="container">
-
-          <h1>{article.article.title}</h1>
-          <ArticleMeta
-            article={article.article}
-            canModify={canModify} />
-
-        </div>
-      </div>
+      <Banner article={article.article} />
 
       <div className="container page">
 
@@ -74,14 +64,13 @@ const Article = ({ match }) => {
 
         <hr />
 
-        <div className="article-actions">
-        </div>
+        <div className="article-actions"></div>
 
         <div className="row">
           <CommentContainer
             comments={comments || []}
             errors={commentErrors}
-            slug={match.params.id}
+            slug={id}
             currentUser={currentUser} />
         </div>
       </div>
@@ -90,4 +79,4 @@ const Article = ({ match }) => {
 };
 
 
-export default withRouter(Article);
+export default Article;
