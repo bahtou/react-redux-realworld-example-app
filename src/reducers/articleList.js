@@ -9,7 +9,7 @@ import {
   PROFILE_PAGE_LOADED,
   PROFILE_FAVORITES_PAGE_LOADED,
   PROFILE_FAVORITES_PAGE_UNLOADED,
-} from '../constants/actionTypes';
+} from '../actions/actionTypes';
 
 
 const initialState = {

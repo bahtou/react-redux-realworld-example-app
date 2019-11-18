@@ -1,7 +1,7 @@
 import React from 'react';
 
 import agent from '../agent';
-import { DELETE_COMMENT } from '../constants/actionTypes';
+import { DELETE_COMMENT } from '../actions/actionTypes';
 import { useArticleDispatch  } from '../context/article';
 
 

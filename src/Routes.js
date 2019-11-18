@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import agent from './agent';
 
-import { APP_LOAD } from './constants/actionTypes';
+import { APP_LOAD } from './actions/actionTypes';
 import { ArticleProvider } from './context/article';
 import { EditorProvider } from './context/editor';
 import { UserProvider } from './context/user';
@@ -90,7 +90,7 @@ const Routes = () => {
 
         <Route path="/@:username" component={Profile} />
       </Switch>
-  </div>
+    </div>
   );
 };
 

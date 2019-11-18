@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import agent from '../agent';
 
-import { PROFILE_PAGE_LOADED } from '../constants/actionTypes';
+import { PROFILE_PAGE_LOADED } from '../actions/actionTypes';
 import { useFetch } from '../hooks';
 
 import UserInfo from '../components/UserInfo';

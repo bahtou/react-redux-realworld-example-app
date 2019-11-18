@@ -4,7 +4,7 @@ import { Link, useHistory  } from 'react-router-dom';
 
 import agent from '../agent';
 
-import { UPDATE_FIELD_USER, LOGIN } from '../constants/actionTypes';
+import { UPDATE_FIELD_USER, LOGIN } from '../actions/actionTypes';
 
 import { useLocalStorage } from '../hooks';
 import { useUserState, useUserDispatch  } from '../context/user';

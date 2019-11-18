@@ -5,7 +5,7 @@ import marked from 'marked';
 
 import agent from '../agent';
 
-import { ARTICLE_PAGE_LOADED } from '../constants/actionTypes';
+import { ARTICLE_PAGE_LOADED } from '../actions/actionTypes';
 import { useArticleState, useArticleDispatch  } from '../context/article';
 import { useFetch } from '../hooks';
 

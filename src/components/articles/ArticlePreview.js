@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import agent from '../../agent';
 
-import { ARTICLE_FAVORITED, ARTICLE_UNFAVORITED } from '../../constants/actionTypes';
+import { ARTICLE_FAVORITED, ARTICLE_UNFAVORITED } from '../../actions/actionTypes';
 
 
 const FAVORITED_CLASS = 'btn btn-sm btn-primary';

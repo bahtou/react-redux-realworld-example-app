@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import agent from '../agent';
 
-import { FOLLOW_USER, UNFOLLOW_USER } from '../constants/actionTypes';
+import { FOLLOW_USER, UNFOLLOW_USER } from '../actions/actionTypes';
 
 
 const EditProfileSettings = ({ isUser }) => {

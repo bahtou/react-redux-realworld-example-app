@@ -11,7 +11,7 @@ import {
   REMOVE_TAG,
   ARTICLE_SUBMITTED,
   UPDATE_FIELD_EDITOR
-} from '../constants/actionTypes';
+} from '../actions/actionTypes';
 import { useEditorState, useEditorDispatch } from '../context/editor';
 import ListErrors from '../components/ListErrors';
 import { EditorLayoutComponent } from './_layouts';

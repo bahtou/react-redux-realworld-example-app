@@ -3,7 +3,7 @@ import {
   PROFILE_PAGE_UNLOADED,
   FOLLOW_USER,
   UNFOLLOW_USER
-} from '../constants/actionTypes';
+} from '../actions/actionTypes';
 
 
 const initialState = {

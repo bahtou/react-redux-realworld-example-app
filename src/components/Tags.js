@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import agent from '../agent';
 
-import { APPLY_TAG_FILTER } from '../constants/actionTypes';
+import { clickTag } from '../actions/actionCreators';
 
 
 const Tags = () => {
@@ -11,7 +11,7 @@ const Tags = () => {
   const { tags } = useSelector(state => state.tagList);
 
   const onClickTag = (tag, pager, payload) => {
-    dispatch({ type: APPLY_TAG_FILTER, tag, pager, payload });
+    dispatch(clickTag(tag, pager, payload));
   };
 
   if (tags.length === 0)

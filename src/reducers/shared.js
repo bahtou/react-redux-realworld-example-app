@@ -17,7 +17,7 @@ import {
   SETTINGS_PAGE_UNLOADED,
   ARTICLE_PAGE_UNLOADED,
   PROFILE_FAVORITES_PAGE_UNLOADED
-} from '../constants/actionTypes';
+} from '../actions/actionTypes';
 
 
 const initialState = {

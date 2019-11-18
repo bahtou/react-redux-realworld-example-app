@@ -4,7 +4,7 @@ import {
   LOGIN_PAGE_UNLOADED,
   REGISTER_PAGE_UNLOADED,
   UPDATE_FIELD_USER,
-} from '../constants/actionTypes';
+} from '../actions/actionTypes';
 
 
 const initialState = {

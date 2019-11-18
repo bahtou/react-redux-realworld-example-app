@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import agent from '../../agent';
-import { ADD_COMMENT } from '../../constants/actionTypes';
+import { ADD_COMMENT } from '../../actions/actionTypes';
 import { useArticleDispatch } from '../../context/article';
 
 

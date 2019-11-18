@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import agent from '../agent';
-import { SETTINGS_SAVED } from '../constants/actionTypes';
+import { SETTINGS_SAVED } from '../actions/actionTypes';
 
 
 const initialState = {
@@ -38,23 +38,23 @@ const SettingsForm = () => {
   const history = useHistory();
   const _dispatch = useDispatch();
   const { currentUser } = useSelector(state => state.shared);
-  const [user, dispatch] = useReducer(reducer, initialState);
-  const { bio, image, username, email, password } = user;
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { bio, image, username, email, password } = state;
 
   const [inProgress, setInProgress] = useState(false);
 
   const submitForm = async ev => {
-    const { bio, image, username, email, password } = user;
-    let _user = user;
+    const { bio, image, username, email, password } = state;
+    let user = state;
 
     ev.preventDefault();
     setInProgress(true);
 
     if (!password) {
-      _user = { bio, image, username, email };
+      user = { bio, image, username, email };
     }
 
-    _dispatch({ type: SETTINGS_SAVED, payload: await agent.Users.save(_user) });
+    _dispatch({ type: SETTINGS_SAVED, payload: await agent.Users.save(user) });
     history.push('/');
   };
 

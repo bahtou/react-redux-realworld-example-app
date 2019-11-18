@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import agent from '../agent';
 
-import { HOME_PAGE_LOADED } from '../constants/actionTypes';
+import { HOME_PAGE_LOADED } from '../actions/actionTypes';
 import { useFetch } from '../hooks';
 
 import { HomeLayoutComponent } from '../pages/_layouts';

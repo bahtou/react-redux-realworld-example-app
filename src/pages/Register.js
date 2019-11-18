@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import agent from '../agent';
 
-import { UPDATE_FIELD_USER, REGISTER } from '../constants/actionTypes';
+import { UPDATE_FIELD_USER, REGISTER } from '../actions/actionTypes';
 import { useUserState, useUserDispatch  } from '../context/user';
 import ListErrors from '../components/ListErrors';
 import { UserLayoutComponent } from '../pages/_layouts';

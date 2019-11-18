@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
 import agent from '../../agent';
-import { DELETE_ARTICLE } from '../../constants/actionTypes';
+import { DELETE_ARTICLE } from '../../actions/actionTypes';
 
 
 const ArticleActions = ({ canModify, article }) => {

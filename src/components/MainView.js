@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import agent from '../agent';
 
-import { CHANGE_TAB } from '../constants/actionTypes';
+import { changeTab } from '../actions/actionCreators';
 
 import ArticleContainer from './articles';
 
@@ -66,12 +66,7 @@ const MainView = ({ loading }) => {
   const { articles, articlesCount, currentPage, pager, tab, tag } = articleList;
 
   const onTabClick = (tab, pager, payload) => {
-    dispatch({
-      type: CHANGE_TAB,
-      tab,
-      pager,
-      payload
-    });
+    dispatch(changeTab(tab, pager, payload));
   };
 
   return (

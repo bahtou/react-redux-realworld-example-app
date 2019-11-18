@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import agent from '../agent';
 
-import { SET_PAGE } from '../constants/actionTypes';
+import { SET_PAGE } from '../actions/actionTypes';
 
 
 const ListPagination = ({ pager, articlesCount, currentPage }) => {

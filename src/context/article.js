@@ -4,7 +4,7 @@ import {
   ARTICLE_PAGE_UNLOADED,
   ADD_COMMENT,
   DELETE_COMMENT
-} from '../constants/actionTypes';
+} from '../actions/actionTypes';
 
 
 const ArticleStateContext = createContext();

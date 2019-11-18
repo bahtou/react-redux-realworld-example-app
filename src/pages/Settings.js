@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 import agent from '../agent';
 
-import { LOGOUT } from '../constants/actionTypes';
+import { LOGOUT } from '../actions/actionTypes';
 import { useLocalStorage } from '../hooks';
 import { SettingsLayoutComponent } from './_layouts';
 import SettingsForm from '../components/SettingsForm';
